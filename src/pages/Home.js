@@ -5,11 +5,11 @@ import TiltCard from "../components/TiltCard";
 
 const outfits = [
   { id: 1, img: "https://via.placeholder.com/800x1000?text=Outfit+1", title: "Vintage Streetwear", tags: ["Thrifted", "Street", "90s"] },
-  { id: 2, img: "https://via.placeholder.com/800x1000?text=Outfit+2", title: "Summer Casual",      tags: ["Casual", "Light", "Minimal"] },
-  { id: 3, img: "https://via.placeholder.com/800x1000?text=Outfit+3", title: "Layered Fit",        tags: ["Layered", "Cozy", "Neutral"] },
-  { id: 4, img: "https://via.placeholder.com/800x1000?text=Outfit+4", title: "Denim Rework",       tags: ["DIY", "Denim"] },
-  { id: 5, img: "https://via.placeholder.com/800x1000?text=Outfit+5", title: "Y2K Throwback",      tags: ["Y2K", "Thrifted"] },
-  { id: 6, img: "https://via.placeholder.com/800x1000?text=Outfit+6", title: "Prep Revival",       tags: ["Preppy", "Clean"] },
+  { id: 2, img: "https://via.placeholder.com/800x1000?text=Outfit+2", title: "Summer Casual", tags: ["Casual", "Light", "Minimal"] },
+  { id: 3, img: "https://via.placeholder.com/800x1000?text=Outfit+3", title: "Layered Fit", tags: ["Layered", "Cozy", "Neutral"] },
+  { id: 4, img: "https://via.placeholder.com/800x1000?text=Outfit+4", title: "Denim Rework", tags: ["DIY", "Denim"] },
+  { id: 5, img: "https://via.placeholder.com/800x1000?text=Outfit+5", title: "Y2K Throwback", tags: ["Y2K", "Thrifted"] },
+  { id: 6, img: "https://via.placeholder.com/800x1000?text=Outfit+6", title: "Prep Revival", tags: ["Preppy", "Clean"] },
 ];
 
 function Tag({ children }) {
@@ -29,11 +29,13 @@ export default function Home() {
         style={{ minHeight: "90svh" }}
       >
         <div className="text-center">
-          <h1 className="text-6xl md:text-7xl font-bold text-charcoal">throw a fit</h1>
-          <p className="mt-4 text-base md:text-lg text-charcoal/70">
-            thrifted looks • stories • tags
-          </p>
-
+            <h1 className="font-clash font-bold text-charcoal text-[4rem] sm:text-[6rem] md:text-[8rem] leading-none">
+              throw a fit
+            </h1>
+            <p className="mt-6 text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] text-charcoal/70">
+              don't know what to wear? throw a fit.
+            </p>
+          
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link
               to="/upload"

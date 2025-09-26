@@ -26,24 +26,9 @@ function App() {
 
           {/* Desktop links */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link
-              to="/"
-              className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-            >
-              Home
-            </Link>
-            <Link
-              to="/upload"
-              className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-            >
-              Upload
-            </Link>
-            <Link
-              to="/profile/daniel"
-              className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-            >
-              My Profile
-            </Link>
+            <Link to="/" className="text-charcoal hover:text-caramel transition">Home</Link>
+            <Link to="/upload" className="text-charcoal hover:text-caramel transition">Upload</Link>
+            <Link to="/profile/daniel" className="text-charcoal hover:text-caramel transition">My Profile</Link>
           </nav>
 
           {/* Mobile menu button */}
@@ -65,32 +50,11 @@ function App() {
 
         {/* Mobile drawer */}
         {open && (
-          <div
-            id="mobile-nav"
-            className="md:hidden border-t border-line bg-creme"
-          >
+          <div id="mobile-nav" className="md:hidden border-t border-line bg-creme">
             <Container className="py-3 flex flex-col gap-3">
-              <Link
-                onClick={() => setOpen(false)}
-                to="/"
-                className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-              >
-                Home
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                to="/upload"
-                className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-              >
-                Upload
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                to="/profile/daniel"
-                className="font-satoshi font-light text-charcoal hover:text-caramel transition"
-              >
-                My Profile
-              </Link>
+              <Link onClick={() => setOpen(false)} to="/" className="text-charcoal hover:text-caramel transition">Home</Link>
+              <Link onClick={() => setOpen(false)} to="/upload" className="text-charcoal hover:text-caramel transition">Upload</Link>
+              <Link onClick={() => setOpen(false)} to="/profile/daniel" className="text-charcoal hover:text-caramel transition">My Profile</Link>
             </Container>
           </div>
         )}
