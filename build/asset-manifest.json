@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/throw/static/css/main.7456a74c.css",
+    "main.js": "/throw/static/js/main.f123fa8f.js",
+    "static/media/Satoshi-Bold.otf": "/throw/static/media/Satoshi-Bold.b5dd7deee13e32689234.otf",
+    "static/media/Satoshi-Regular.otf": "/throw/static/media/Satoshi-Regular.811ccb0b5af1892a71df.otf",
+    "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
+    "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
+    "index.html": "/throw/index.html",
+    "main.7456a74c.css.map": "/throw/static/css/main.7456a74c.css.map",
+    "main.f123fa8f.js.map": "/throw/static/js/main.f123fa8f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7456a74c.css",
+    "static/js/main.f123fa8f.js"
+  ]
+}
