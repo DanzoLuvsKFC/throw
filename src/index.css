@@ -5,8 +5,8 @@
 /* Import local fonts */
 @font-face {
   font-family: "ClashDisplay";
-  src: url("./assets/fonts/ClashDisplay-Regular.otf") format("opentype");
-  font-weight: normal;
+  src: url("./assets/fonts/ClashDisplay-Bold.otf") format("opentype");
+  font-weight: bold;
   font-style: normal;
 }
 
@@ -20,4 +20,9 @@
 /* Apply global styles */
 body {
   @apply bg-creme font-satoshi text-charcoal;
+}
+
+/* Make all h1 use Clash Display */
+h1 {
+  @apply font-clash;
 }

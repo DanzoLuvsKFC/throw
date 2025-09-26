@@ -15,7 +15,7 @@ function App() {
       <header className="bg-cream border-b border-line sticky top-0 z-50">
         <nav className="max-w-6xl mx-auto flex items-center justify-between p-4">
           {/* Logo / Title */}
-          <h1 className="text-xl font-bold text-charcoal">Throw a Fit</h1>
+          <h1 className="text-xl font-bold text-charcoal">throw a fit</h1>
 
           {/* Links */}
           <div className="flex gap-6">
