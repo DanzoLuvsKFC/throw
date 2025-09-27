@@ -66,20 +66,6 @@ export default function Home() {
             don't know what to wear? throw a fit.
           </p>
 
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <Link
-              to="/upload"
-              className="bg-charcoal text-creme px-5 py-2 rounded-lg hover:bg-charcoal/90 transition"
-            >
-              Upload a Fit
-            </Link>
-            <a
-              href="#about"
-              className="px-5 py-2 rounded-lg border border-line text-charcoal hover:bg-white/60 transition"
-            >
-              Learn more
-            </a>
-          </div>
         </div>
 
         {/* scroll cue */}
@@ -180,15 +166,7 @@ export default function Home() {
             img="https://placehold.co/1200x800?text=Vintage"
             className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3 lg:row-span-3"
           >
-            <p className="mt-2 text-sm text-creme/90 text-center max-w-xs">
-              Hand-picked classics and rare finds. New drops weekly.
-            </p>
-            <Link
-              to="/"
-              className="mt-3 inline-block rounded-full bg-creme/90 text-charcoal px-4 py-1.5 text-sm hover:bg-creme transition"
-            >
-              Discover
-            </Link>
+            
           </CollectionCard>
 
           {/* MIDDLE column (inverse) */}
@@ -217,23 +195,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4) CTA / STORY — wider container; height unchanged, text allowed to breathe more */}
-      <section className="max-w-[100rem] mx-auto px-4 pb-24">
-        <div className="rounded-2xl border border-line bg-white/70 p-6 md:p-10 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-charcoal">Share your thrift story</h2>
-          <p className="mt-3 text-charcoal/70 max-w-4xl mx-auto">
-            Post your latest find, tag the garments, and inspire someone’s next fit.
-          </p>
-          <div className="mt-6">
-            <Link
-              to="/upload"
-              className="bg-charcoal text-creme px-5 py-2 rounded-lg hover:bg-charcoal/90 transition"
-            >
-              Upload a Fit
-            </Link>
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 }

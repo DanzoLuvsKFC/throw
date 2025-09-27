@@ -1,7 +1,7 @@
 // src/App.js
 import "./App.css";
-import { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useMemo } from "react";
 
 import Home from "./pages/Home";
 import OutfitPost from "./pages/OutfitPost";
@@ -10,57 +10,30 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 import Container from "./components/Container";
+import StaggeredMenu from "./components/StaggeredMenu";
 
 function App() {
-  const [open, setOpen] = useState(false);
+  const menuItems = useMemo(
+    () => [
+      { label: "home", ariaLabel: "Go to home page", link: "/" },
+      { label: "flex a fit", ariaLabel: "Upload a fit", link: "/upload" },
+      { label: "fitography", ariaLabel: "Browse styles", link: "/#collections" },
+      { label: "profile", ariaLabel: "View my profile", link: "/profile/daniel" },
+    ],
+    []
+  );
+
+  const socialItems = useMemo(
+    () => [
+      { label: "Instagram", link: "https://instagram.com" },
+      { label: "GitHub", link: "https://github.com" },
+      { label: "LinkedIn", link: "https://linkedin.com" },
+    ],
+    []
+  );
 
   return (
-    <div className="min-h-screen bg-creme">
-      {/* Navbar */}
-      <header className="bg-creme border-b border-line sticky top-0 z-50">
-        <Container className="flex items-center justify-between py-3">
-          {/* Logo / Title */}
-          <Link to="/" className="text-xl font-bold text-charcoal">
-            throw a fit
-          </Link>
-
-          {/* Desktop links */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-charcoal hover:text-caramel transition">Home</Link>
-            <Link to="/upload" className="text-charcoal hover:text-caramel transition">Upload</Link>
-            <Link to="/profile/daniel" className="text-charcoal hover:text-caramel transition">My Profile</Link>
-          </nav>
-
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-lg border border-line text-charcoal"
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            onClick={() => setOpen((v) => !v)}
-          >
-            <span className="sr-only">Toggle menu</span>
-            {/* simple hamburger */}
-            <div className="space-y-1">
-              <span className="block h-0.5 w-5 bg-charcoal"></span>
-              <span className="block h-0.5 w-5 bg-charcoal"></span>
-              <span className="block h-0.5 w-5 bg-charcoal"></span>
-            </div>
-          </button>
-        </Container>
-
-        {/* Mobile drawer */}
-        {open && (
-          <div id="mobile-nav" className="md:hidden border-t border-line bg-creme">
-            <Container className="py-3 flex flex-col gap-3">
-              <Link onClick={() => setOpen(false)} to="/" className="text-charcoal hover:text-caramel transition">Home</Link>
-              <Link onClick={() => setOpen(false)} to="/upload" className="text-charcoal hover:text-caramel transition">Upload</Link>
-              <Link onClick={() => setOpen(false)} to="/profile/daniel" className="text-charcoal hover:text-caramel transition">My Profile</Link>
-            </Container>
-          </div>
-        )}
-      </header>
-
-      {/* Routes */}
+    <div className="min-h-screen bg-creme relative">
       <main>
         <Container className="py-4">
           <Routes>
@@ -72,6 +45,30 @@ function App() {
           </Routes>
         </Container>
       </main>
+
+      {/* Menu overlay */}
+      <div className="fixed inset-0 z-[60] pointer-events-none">
+        <StaggeredMenu
+          className="pointer-events-auto"
+          position="right"
+          items={menuItems}
+          socialItems={socialItems}
+          displaySocials
+          displayItemNumbering={false}
+          showLogo={false}
+          logoUrl="/logo.svg"
+
+          /* >>> THEME <<< */
+          colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]} // sweep layers
+          accentColor="#ffffe3"                                 // hover/numbering/socials
+          menuButtonColor="#111111"                             // toggle when closed
+          openMenuButtonColor="#ffffe3"                         // toggle when open (over dark panel)
+          changeMenuColorOnOpen={true}
+
+          onMenuOpen={() => console.log("Menu opened")}
+          onMenuClose={() => console.log("Menu closed")}
+        />
+      </div>
     </div>
   );
 }
