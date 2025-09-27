@@ -117,7 +117,7 @@ export default function Home() {
           {/* RIGHT text: span 5/12 on large screens */}
           <div className="lg:col-span-5">
             <h2 className="text-3xl md:text-4xl font-bold text-charcoal">
-              Find your next thrifted look
+              find the fit
             </h2>
             <p className="mt-4 text-charcoal/70">
               Throw a Fit is a community-driven space to share thrifted outfits,
