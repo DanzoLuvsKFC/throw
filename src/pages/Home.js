@@ -242,7 +242,7 @@ export default function Home() {
 
         {posts.length === 0 ? (
           <div className="p-6 text-center text-charcoal/70">
-            no uploads yet. Hit <span className="font-medium">“flex a fit”</span> to post your first look.
+            no uploads yet. hit <span className="font-medium">“flex a fit”</span> to post your first look.
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
