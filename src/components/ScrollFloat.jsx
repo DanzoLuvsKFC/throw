@@ -64,24 +64,19 @@ const ScrollFloat = ({
         return; // no ScrollTrigger needed
       }
 
-      const scroller =
-        scrollContainerRef?.current ?? window;
+      const scroller = scrollContainerRef?.current ?? window;
 
-      gsap.fromTo(
-        chars,
-        fromVars,
-        {
-          ...toVars,
-          scrollTrigger: {
-            trigger: el,
-            scroller,
-            start: scrollStart,
-            end: scrollEnd,
-            scrub: scrub && !once ? true : false,
-            toggleActions: once ? "play none none none" : undefined,
-          },
-        }
-      );
+      gsap.fromTo(chars, fromVars, {
+        ...toVars,
+        scrollTrigger: {
+          trigger: el,
+          scroller,
+          start: scrollStart,
+          end: scrollEnd,
+          scrub: scrub && !once ? true : false,
+          toggleActions: once ? "play none none none" : undefined,
+        },
+      });
     }, el);
 
     return () => ctx.revert();

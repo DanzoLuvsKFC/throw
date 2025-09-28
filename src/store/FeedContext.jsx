@@ -1,10 +1,12 @@
 // src/store/FeedContext.jsx
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const FeedContext = createContext(null);
+const LS_KEY = "taf_posts_v1";
 
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
+    if (!file) return resolve("");
     const fr = new FileReader();
     fr.onload = () => resolve(fr.result);
     fr.onerror = reject;
@@ -12,49 +14,41 @@ function fileToDataUrl(file) {
   });
 }
 
+function makeId() {
+  return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export function FeedProvider({ children }) {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
 
-  // load from localStorage
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("taf_posts");
-      if (raw) setPosts(JSON.parse(raw));
-    } catch {}
-  }, []);
-
-  // save to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("taf_posts", JSON.stringify(posts));
+      localStorage.setItem(LS_KEY, JSON.stringify(posts));
     } catch {}
   }, [posts]);
 
-  const addPost = async ({ file, caption = "", tags = [], user = "guest" }) => {
-    if (!file) throw new Error("No file provided");
-
-    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    const dataUrl = await fileToDataUrl(file);
-
+  const addPost = useCallback(async ({ file, caption = "", tags = [], user = "guest" }) => {
+    const src = await fileToDataUrl(file); // stores image locally
     const post = {
-      id,
-      image: dataUrl,     // data URL for persistence
-      caption: caption.trim(),
-      tags: tags.map((t) => t.trim()).filter(Boolean),
-      user,
+      id: makeId(),
+      src,
+      caption,
+      tags,
+      user,           // simple string username for now
       createdAt: Date.now(),
     };
+    setPosts((arr) => [post, ...arr]);
+    return post;
+  }, []);
 
-    setPosts((prev) => [post, ...prev]);
-    return id;
-  };
-
-  const removePost = (id) => {
-    setPosts((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  const value = useMemo(() => ({ posts, addPost, removePost }), [posts]);
-
+  const value = useMemo(() => ({ posts, addPost }), [posts, addPost]);
   return <FeedContext.Provider value={value}>{children}</FeedContext.Provider>;
 }
 
