@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.89061376.css",
-    "main.js": "/throw/static/js/main.76e374cd.js",
+    "main.css": "/throw/static/css/main.31e9c2b9.css",
+    "main.js": "/throw/static/js/main.dd4ef618.js",
     "static/media/Satoshi-Bold.otf": "/throw/static/media/Satoshi-Bold.b5dd7deee13e32689234.otf",
     "static/media/Satoshi-Regular.otf": "/throw/static/media/Satoshi-Regular.811ccb0b5af1892a71df.otf",
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.89061376.css.map": "/throw/static/css/main.89061376.css.map",
-    "main.76e374cd.js.map": "/throw/static/js/main.76e374cd.js.map"
+    "main.31e9c2b9.css.map": "/throw/static/css/main.31e9c2b9.css.map",
+    "main.dd4ef618.js.map": "/throw/static/js/main.dd4ef618.js.map"
   },
   "entrypoints": [
-    "static/css/main.89061376.css",
-    "static/js/main.76e374cd.js"
+    "static/css/main.31e9c2b9.css",
+    "static/js/main.dd4ef618.js"
   ]
 }
