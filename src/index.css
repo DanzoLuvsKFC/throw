@@ -42,7 +42,7 @@ h1 {
 }
 
 h2 {
-  @apply font-satoshi font-bold;
+  @apply font-clash;
 }
 
 h3 {
