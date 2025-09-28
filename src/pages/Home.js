@@ -149,20 +149,6 @@ export default function Home() {
               </ul>
             </div>
 
-            <div className="mt-8 flex gap-3">
-              <Link
-                to="/upload"
-                className="bg-charcoal text-creme px-5 py-2 rounded-lg hover:bg-charcoal/90 transition"
-              >
-                Post your first fit
-              </Link>
-              <a
-                href="#collections"
-                className="px-5 py-2 rounded-lg border border-line text-charcoal hover:bg-white/60 transition"
-              >
-                Explore the feed
-              </a>
-            </div>
           </div>
         </div>
       </section>

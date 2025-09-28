@@ -1,3 +1,4 @@
+// src/components/StaggeredMenu.jsx
 import React, { useCallback, useLayoutEffect, useRef, useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
@@ -8,7 +9,7 @@ const StaggeredMenu = ({
   items = [],
   socialItems = [],
   displaySocials = true,
-  displayItemNumbering = false,     // ⟵ numbering OFF by default
+  displayItemNumbering = false, // numbering OFF by default
   className,
   showLogo = false,
   logoUrl = "/logo.svg",
@@ -42,8 +43,6 @@ const StaggeredMenu = ({
 
   const toggleBtnRef = useRef(null);
   const busyRef = useRef(false);
-
-  const itemEntranceTweenRef = useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,6 +84,25 @@ const StaggeredMenu = ({
     return () => ctx.revert();
   }, [menuButtonColor, position]);
 
+  // --- helper: split labels into spans once ---------------------------------
+  const splitLabelsOnce = useCallback((labelEls) => {
+    labelEls.forEach((el) => {
+      if (el.dataset.split === "1") return;
+      const raw = el.textContent || "";
+      const frag = document.createDocumentFragment();
+      for (const ch of raw) {
+        const span = document.createElement("span");
+        span.className = "sm-char inline-block";
+        span.textContent = ch === " " ? "\u00A0" : ch;
+        frag.appendChild(span);
+      }
+      el.setAttribute("data-split", "1");
+      el.setAttribute("aria-label", raw);
+      el.textContent = "";
+      el.appendChild(frag);
+    });
+  }, []);
+
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
     const layers = preLayerElsRef.current;
@@ -93,9 +111,12 @@ const StaggeredMenu = ({
     openTlRef.current?.kill();
     closeTweenRef.current?.kill();
     closeTweenRef.current = null;
-    itemEntranceTweenRef.current?.kill();
 
-    const itemEls = Array.from(panel.querySelectorAll(".sm-panel-itemLabel"));
+    // grab labels and split into characters if needed
+    const labelEls = Array.from(panel.querySelectorAll(".sm-panel-itemLabel"));
+    splitLabelsOnce(labelEls);
+    const perLabelChars = labelEls.map((el) => Array.from(el.querySelectorAll(".sm-char")));
+
     const numberEls = Array.from(panel.querySelectorAll(".sm-panel-list[data-numbering] .sm-panel-item"));
     const socialTitle = panel.querySelector(".sm-socials-title");
     const socialLinks = Array.from(panel.querySelectorAll(".sm-socials-link"));
@@ -103,16 +124,37 @@ const StaggeredMenu = ({
     const layerStates = layers.map((el) => ({ el, start: Number(gsap.getProperty(el, "xPercent")) }));
     const panelStart = Number(gsap.getProperty(panel, "xPercent"));
 
-    // start states: fade FROM BOTTOM
-    if (itemEls.length) gsap.set(itemEls, { y: 24, opacity: 0, rotate: 0 });
+    // set panel pre-state
+    gsap.set(panel, { autoAlpha: 0, y: 10 });
+
+    // char animation states (Float-in like ScrollFloat)
+    const fromVars = {
+      willChange: "opacity, transform",
+      opacity: 0,
+      yPercent: 120,
+      scaleY: 2.3,
+      scaleX: 0.7,
+      transformOrigin: "50% 0%",
+    };
+    const toVars = {
+      opacity: 1,
+      yPercent: 0,
+      scaleY: 1,
+      scaleX: 1,
+      duration: 0.8,
+      ease: "power3.out",
+      stagger: 0.018,
+    };
+
+    // reset chars to hidden before playing
+    perLabelChars.forEach((chars) => gsap.set(chars, fromVars));
     if (numberEls.length) gsap.set(numberEls, { ["--sm-num-opacity"]: 0 });
     if (socialTitle) gsap.set(socialTitle, { opacity: 0, y: 8 });
     if (socialLinks.length) gsap.set(socialLinks, { y: 20, opacity: 0 });
-    gsap.set(panel, { autoAlpha: 0, y: 10 }); // panel rises a touch too
 
     const tl = gsap.timeline({ paused: true });
 
-    // colored pre-layers
+    // colored pre-layers slide
     layerStates.forEach((ls, i) => {
       tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: "power4.out" }, i * 0.07);
     });
@@ -129,22 +171,23 @@ const StaggeredMenu = ({
       panelInsertTime
     );
 
-    // items rise & fade in
-    if (itemEls.length) {
-      const itemsStart = panelInsertTime + panelDuration * 0.15;
+    // per-link char float-ins (stagger blocks by item)
+    const itemsStart = panelInsertTime + panelDuration * 0.15;
+    perLabelChars.forEach((chars, i) => {
       tl.to(
-        itemEls,
-        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: { each: 0.08, from: "start" } },
-        itemsStart
+        chars,
+        toVars,
+        itemsStart + i * 0.07 // small cascade between each nav item
       );
+    });
 
-      if (numberEls.length) {
-        tl.to(
-          numberEls,
-          { duration: 0.6, ease: "power2.out", ["--sm-num-opacity"]: 1, stagger: { each: 0.08, from: "start" } },
-          itemsStart + 0.1
-        );
-      }
+    // (optional) numbering reveal if enabled
+    if (numberEls.length) {
+      tl.to(
+        numberEls,
+        { duration: 0.6, ease: "power2.out", ["--sm-num-opacity"]: 1, stagger: { each: 0.08, from: "start" } },
+        itemsStart + 0.1
+      );
     }
 
     // socials
@@ -169,14 +212,16 @@ const StaggeredMenu = ({
 
     openTlRef.current = tl;
     return tl;
-  }, []);
+  }, [splitLabelsOnce]);
 
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
     busyRef.current = true;
     const tl = buildOpenTimeline();
     if (tl) {
-      tl.eventCallback("onComplete", () => { busyRef.current = false; });
+      tl.eventCallback("onComplete", () => {
+        busyRef.current = false;
+      });
       tl.play(0);
     } else {
       busyRef.current = false;
@@ -186,7 +231,6 @@ const StaggeredMenu = ({
   const playClose = useCallback(() => {
     openTlRef.current?.kill();
     openTlRef.current = null;
-    itemEntranceTweenRef.current?.kill();
 
     const panel = panelRef.current;
     const layers = preLayerElsRef.current;
@@ -203,12 +247,11 @@ const StaggeredMenu = ({
       ease: "power3.in",
       overwrite: "auto",
       onComplete: () => {
-        const itemEls = Array.from(panel.querySelectorAll(".sm-panel-itemLabel"));
-        if (itemEls.length) gsap.set(itemEls, { y: 24, opacity: 0 });
+        // reset some states so re-open feels fresh
         const numberEls = Array.from(panel.querySelectorAll(".sm-panel-list[data-numbering] .sm-panel-item"));
-        if (numberEls.length) gsap.set(numberEls, { ["--sm-num-opacity"]: 0 });
         const socialTitle = panel.querySelector(".sm-socials-title");
         const socialLinks = Array.from(panel.querySelectorAll(".sm-socials-link"));
+        if (numberEls.length) gsap.set(numberEls, { ["--sm-num-opacity"]: 0 });
         if (socialTitle) gsap.set(socialTitle, { opacity: 0, y: 8 });
         if (socialLinks.length) gsap.set(socialLinks, { y: 20, opacity: 0 });
         gsap.set(panel, { autoAlpha: 0, y: 10 });
@@ -393,13 +436,13 @@ const StaggeredMenu = ({
             <ul
               className="sm-panel-list list-none m-0 p-0 flex flex-col gap-2"
               role="list"
-              data-numbering={displayItemNumbering || undefined}  // stays undefined -> no numbering
+              data-numbering={displayItemNumbering || undefined}
             >
               {items && items.length ? (
                 items.map((it, idx) => (
                   <li className="sm-panel-itemWrap relative leading-none" key={it.label + idx}>
                     <RouterLink
-                      className="sm-panel-item relative cursor-pointer tracking-[-2px] transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.8em]"
+                      className="sm-panel-item font-clash relative cursor-pointer tracking-[-2px] transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.8em]"
                       to={it.link || "/"}
                       aria-label={it.ariaLabel || it.label}
                       data-index={idx + 1}
@@ -411,7 +454,7 @@ const StaggeredMenu = ({
                 ))
               ) : (
                 <li className="sm-panel-itemWrap relative leading-none" aria-hidden="true">
-                  <span className="sm-panel-item relative cursor-pointer tracking-[-2px] pr-[1.8em]">
+                  <span className="sm-panel-item font-clash relative cursor-pointer tracking-[-2px] pr-[1.8em]">
                     <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%]">No items</span>
                   </span>
                 </li>
@@ -424,7 +467,12 @@ const StaggeredMenu = ({
                 <ul className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap" role="list">
                   {socialItems.map((s, i) => (
                     <li key={s.label + i} className="sm-socials-item">
-                      <a href={s.link} target="_blank" rel="noopener noreferrer" className="sm-socials-link text-[1.1rem] font-medium no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear">
+                      <a
+                        href={s.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="sm-socials-link text-[1.1rem] font-medium no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
+                      >
                         {s.label}
                       </a>
                     </li>
@@ -466,9 +514,10 @@ const StaggeredMenu = ({
 /* prevent clipping */
 .sm-scope .sm-panel-itemWrap { overflow: visible; }
 
-/* item styles (Satoshi, non-caps) */
+/* item styles (ClashDisplay via class, plus fallback here) */
 .sm-scope .sm-panel-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .sm-scope .sm-panel-item {
+  font-family: "ClashDisplay", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: #ffffe3;
   font-weight: 700;
   font-size: 3rem;
@@ -476,12 +525,23 @@ const StaggeredMenu = ({
   letter-spacing: -0.02em;
   text-transform: none;
   transition: color 0.25s, opacity 0.25s;
-  padding-right: 1.8em;
+  padding-right: 1.2em;
 }
 .sm-scope .sm-panel-item:hover { color: var(--sm-accent, #ffffe3); opacity: 0.92; }
-.sm-scope .sm-panel-itemLabel { display: inline-block; transform-origin: 50% 100%; }
 
-/* numbering rules kept but disabled unless data-numbering is set */
+/* label + char spans for float effect */
+.sm-scope .sm-panel-itemLabel {
+  display: inline-flex;            /* keeps chars on one baseline */
+  overflow: hidden;                /* mask the rising chars */
+  transform-origin: 50% 100%;
+}
+.sm-scope .sm-char {
+  display: inline-block;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* numbering (disabled unless data-numbering is set) */
 .sm-scope .sm-panel-list[data-numbering] { counter-reset: smItem; }
 .sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after {
   counter-increment: smItem; content: counter(smItem, decimal-leading-zero);
