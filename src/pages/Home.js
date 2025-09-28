@@ -1,20 +1,73 @@
-// src/pages/Home.js
-import { useMemo, useState } from "react";
+import { useMemo, useState, useLayoutEffect, useRef } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 
+/* GSAP reveal for non-text elements (images, blocks) */
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+
 // --- import your 3 local photos (paths are from src/pages -> src/assets/...)
 import look1 from "../assets/fonts/fits/fit.jpg";
-import look2 from "../assets/fonts/fits/fit 8.jpg";   // spaces OK, but renaming is cleaner
-import look3 from "../assets/fonts/fits/fit 12.jpg";  // spaces OK, but renaming is cleaner
-
+import look2 from "../assets/fonts/fits/fit 8.jpg";
+import look3 from "../assets/fonts/fits/fit 12.jpg";
+gsap.registerPlugin(ScrollTrigger);
 /* Edge-to-edge triptych images for the About section */
 const aboutImages = [look1, look2, look3];
+
+/* Simple float/fade-in reveal (no character split, keeps spacing perfect) */
+function FloatIn({
+  as = "div",
+  children,
+  className = "",
+  duration = 0.8,
+  delay = 0,
+  y = 28,
+  ease = "power3.out",
+  start = "top 85%",
+}) {
+  const Tag = as;
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(el, { opacity: 0, y });
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration,
+        delay,
+        ease,
+        scrollTrigger: {
+          trigger: el,
+          start,
+          end: "top 60%",
+          toggleActions: "play none none none",
+        },
+      });
+    }, ref);
+
+    return () => ctx.revert();
+  }, [duration, delay, y, ease, start]);
+
+  return (
+    <Tag ref={ref} className={className}>
+      {children}
+    </Tag>
+  );
+}
 
 /* Masonry-friendly card for uploads */
 function FitCard({ post }) {
   return (
-    <article className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-charcoal/10 bg-white group">
+    <FloatIn
+      as="article"
+      className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-charcoal/10 bg-white group"
+      y={36}
+    >
       <div className="relative">
         <img
           src={post.src}
@@ -43,12 +96,13 @@ function FitCard({ post }) {
       {(post.caption || post.user) && (
         <div className="p-3">
           <div className="text-sm text-charcoal/60">
-            @{post.user ?? "guest"} • {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+            @{post.user ?? "guest"} •{" "}
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
           </div>
           {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
         </div>
       )}
-    </article>
+    </FloatIn>
   );
 }
 
@@ -154,11 +208,11 @@ export default function Home() {
       {/* SECTION 2 — ABOUT (edge-to-edge triptych + copy) */}
       <section id="about" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <div className="grid lg:grid-cols-12 gap-8 items-center">
-          {/* LEFT: edge-to-edge images */}
+          {/* LEFT: edge-to-edge images, rounded, animated */}
           <div className="lg:col-span-7">
             <div className="grid grid-cols-3 gap-3">
               {aboutImages.map((src, i) => (
-                <div key={i}>
+                <FloatIn key={i} className="rounded-2xl overflow-hidden" y={36}>
                   <img
                     src={src}
                     alt={`Outfit ${i + 1}`}
@@ -166,12 +220,12 @@ export default function Home() {
                     loading="lazy"
                     decoding="async"
                   />
-                </div>
+                </FloatIn>
               ))}
             </div>
           </div>
 
-          {/* RIGHT: copy */}
+          {/* RIGHT: copy (use FloatIn to avoid weird word breaking) */}
           <div className="lg:col-span-5">
             <ScrollFloat
               as="h2"
@@ -186,20 +240,11 @@ export default function Home() {
               find the fit
             </ScrollFloat>
 
-            <ScrollFloat
-              as="p"
-              animationDuration={1.05}
-              ease="power2.out"
-              scrollStart="top 95%"
-              scrollEnd="top 55%"
-              stagger={0.005}
-              containerClassName="mt-4 m-0"
-              textClassName="text-charcoal/70"
-            >
+            <FloatIn as="p" className="mt-4 m-0 text-charcoal/70" y={20} duration={0.9}>
               Throw a Fit is a community-driven space to share thrifted outfits, tag the pieces,
               and discover new styles. Think of it like your curated, fashion-forward moodboard,
               powered by real people and real finds.
-            </ScrollFloat>
+            </FloatIn>
           </div>
         </div>
       </section>

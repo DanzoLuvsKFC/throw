@@ -25,7 +25,7 @@ function App() {
       { label: "home", ariaLabel: "Go to home page", link: "/" },
       { label: "flex a fit", ariaLabel: "Upload a fit", link: "/upload" },
       { label: "fitography", ariaLabel: "Browse styles", link: "/#collections" },
-      { label: "profile", ariaLabel: "View my profile", link: "/profile/daniel" },
+      // { label: "profile", ariaLabel: "View my profile", link: "/profile/daniel" },
     ],
     []
   );
