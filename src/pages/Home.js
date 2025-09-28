@@ -3,12 +3,13 @@ import { useMemo, useState } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 
+// --- import your 3 local photos (paths are from src/pages -> src/assets/...)
+import look1 from "../assets/fonts/fits/fit.jpg";
+import look2 from "../assets/fonts/fits/fit 8.jpg";   // spaces OK, but renaming is cleaner
+import look3 from "../assets/fonts/fits/fit 12.jpg";  // spaces OK, but renaming is cleaner
+
 /* Edge-to-edge triptych images for the About section */
-const aboutImages = [
-  "https://placehold.co/800x1100?text=Outfit+1",
-  "https://placehold.co/800x1100?text=Outfit+2",
-  "https://placehold.co/800x1100?text=Outfit+3",
-];
+const aboutImages = [look1, look2, look3];
 
 /* Masonry-friendly card for uploads */
 function FitCard({ post }) {
@@ -163,6 +164,7 @@ export default function Home() {
                     alt={`Outfit ${i + 1}`}
                     className="w-full h-[240px] md:h-[360px] object-cover"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}
