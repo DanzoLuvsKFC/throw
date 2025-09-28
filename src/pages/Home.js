@@ -1,6 +1,6 @@
 // src/pages/Home.js
-import { Link } from "react-router-dom";
 import ScrollFloat from "../components/ScrollFloat";
+import { useFeed } from "../store/FeedContext";
 
 // Triptych images for the About section
 const aboutImages = [
@@ -9,38 +9,47 @@ const aboutImages = [
   "https://placehold.co/600x800?text=Look+3",
 ];
 
-/** Reusable card for the mosaic */
-function CollectionCard({ title, img, className = "", children }) {
+function FitCard({ post }) {
   return (
-    <div className={`group relative overflow-hidden rounded-2xl border border-line bg-white/70 ${className}`}>
-      {/* image layer with hover zoom */}
+    <article className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white">
       <img
-        src={img}
-        alt={title}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        src={post.image}
+        alt={post.caption || "outfit photo"}
+        className="w-full h-60 md:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
       />
-      {/* overlay */}
-      <div className="absolute inset-0 bg-black/20" />
-      {/* content */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center text-creme p-4">
-        <h3 className="text-2xl md:text-3xl font-normal">{title}</h3>
-        {children}
+      <div className="p-3">
+        {post.caption && (
+          <p className="text-sm text-charcoal/80 line-clamp-2">{post.caption}</p>
+        )}
+        {post.tags?.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {post.tags.map((t) => (
+              <span
+                key={t}
+                className="text-xs px-2 py-0.5 rounded-full bg-black/5 text-charcoal/80"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </article>
   );
 }
 
 export default function Home() {
+  const { posts } = useFeed();
+
   return (
     <div className="bg-creme">
-      {/* 1) HERO — play-on-mount animations for title + subtitle */}
+      {/* 1) HERO */}
       <section
         className="relative max-w-6xl mx-auto flex items-center justify-center px-4"
         style={{ minHeight: "90svh" }}
       >
         <div className="text-center">
-          {/* HERO title — plays once on mount */}
           <ScrollFloat
             as="h1"
             playOnMount
@@ -52,7 +61,6 @@ export default function Home() {
             throw a fit
           </ScrollFloat>
 
-          {/* HERO subtitle — also plays on mount, slightly delayed */}
           <ScrollFloat
             as="p"
             playOnMount
@@ -80,11 +88,10 @@ export default function Home() {
         </a>
       </section>
 
-      {/* 2) ABOUT — wider container + 12-col layout */}
+      {/* 2) ABOUT */}
       <section id="about" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <div className="grid lg:grid-cols-12 gap-8 items-center">
-          {/* LEFT images: span 7/12 on large screens */}
-          <div className="lg:col-span-7 bg-white/70 border border-line rounded-3xl p-3">
+          <div className="lg:col-span-7 bg-white/70 border border-black/10 rounded-3xl p-3">
             <div className="grid grid-cols-3 gap-3">
               {aboutImages.map((src, i) => (
                 <div key={i} className="overflow-hidden rounded-2xl">
@@ -99,7 +106,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RIGHT text: span 5/12 on large screens */}
           <div className="lg:col-span-5">
             <ScrollFloat
               as="h2"
@@ -148,12 +154,11 @@ export default function Home() {
                 <li>Follow profiles you love</li>
               </ul>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* 3) FEATURED STYLES — symmetric mosaic */}
+      {/* 3) FITOGRAPHY — shows the uploaded posts */}
       <section id="collections" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
           <ScrollFloat
@@ -179,54 +184,21 @@ export default function Home() {
             containerClassName="mt-2 m-0"
             textClassName="text-charcoal/70"
           >
-            Dare to mix and match. Check our collections to level up your fashion game.
+            Your latest looks — shared by the community.
           </ScrollFloat>
         </header>
 
-        <div
-          className="
-            grid gap-4
-            sm:grid-cols-2 sm:auto-rows-[170px]
-            lg:grid-cols-6 lg:grid-rows-[repeat(5,minmax(0,1fr))]
-            lg:h-[min(82svh,700px)]
-          "
-        >
-          {/* LEFT column */}
-          <CollectionCard
-            title="Streetwear"
-            img="https://placehold.co/1200x800?text=Streetwear"
-            className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2"
-          />
-          <CollectionCard
-            title="Vintage"
-            img="https://placehold.co/1200x800?text=Vintage"
-            className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3 lg:row-span-3"
-          />
-
-          {/* MIDDLE column (inverse) */}
-          <CollectionCard
-            title="Techwear"
-            img="https://placehold.co/1200x800?text=Techwear"
-            className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-3"
-          />
-          <CollectionCard
-            title="Athleisure"
-            img="https://placehold.co/1200x800?text=Athleisure"
-            className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2"
-          />
-
-          {/* RIGHT column (mirror left) */}
-          <CollectionCard
-            title="Minimalist"
-            img="https://placehold.co/1200x800?text=Minimalist"
-            className="sm:col-span-2 lg:col-start-5 lg:col-span-2 lg:row-start-1 lg:row-span-2"
-          />
-          <CollectionCard
-            title="Y2K"
-            img="https://placehold.co/1200x800?text=Y2K"
-            className="sm:col-span-2 lg:col-start-5 lg:col-span-2 lg:row-start-3 lg:row-span-3"
-          />
-        </div>
+        {posts.length === 0 ? (
+          <div className="text-center text-charcoal/60">
+            No fits yet. Hit <span className="underline">flex a fit</span> to upload your first one.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {posts.map((p) => (
+              <FitCard key={p.id} post={p} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

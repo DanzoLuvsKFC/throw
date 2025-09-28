@@ -33,7 +33,7 @@ const StaggeredMenu = ({
 
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
-  const [textLines, setTextLines] = useState(["Menu", "Close"]);
+  const [textLines, setTextLines] = useState(["menu", "close"]);
 
   const openTlRef = useRef(null);
   const closeTweenRef = useRef(null);
@@ -312,14 +312,14 @@ const StaggeredMenu = ({
     if (!inner) return;
     textCycleAnimRef.current?.kill();
 
-    const currentLabel = opening ? "Menu" : "Close";
-    const targetLabel = opening ? "Close" : "Menu";
+    const currentLabel = opening ? "menu" : "close";
+    const targetLabel = opening ? "close" : "menu";
     const cycles = 3;
 
     const seq = [currentLabel];
     let last = currentLabel;
     for (let i = 0; i < cycles; i++) {
-      last = last === "Menu" ? "Close" : "Menu";
+      last = last === "menu" ? "close" : "menu";
       seq.push(last);
     }
     if (last !== targetLabel) seq.push(targetLabel);
@@ -463,7 +463,7 @@ const StaggeredMenu = ({
 
             {displaySocials && socialItems && socialItems.length > 0 && (
               <div className="sm-socials mt-auto pt-8 flex flex-col gap-3" aria-label="Social links">
-                <h3 className="sm-socials-title m-0 text-base font-medium">Socials</h3>
+                <h3 className="sm-socials-title m-0 text-base font-medium">socials</h3>
                 <ul className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap" role="list">
                   {socialItems.map((s, i) => (
                     <li key={s.label + i} className="sm-socials-item">
