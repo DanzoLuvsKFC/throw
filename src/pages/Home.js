@@ -1,17 +1,6 @@
 // src/pages/Home.js
 import { Link } from "react-router-dom";
-import Reveal from "../components/Reveal";
-import TiltCard from "../components/TiltCard";
-
-// Demo content (unchanged)
-const outfits = [
-  { id: 1, img: "https://placehold.co/800x1000?text=Outfit+1", title: "Vintage Streetwear", tags: ["Thrifted", "Street", "90s"] },
-  { id: 2, img: "https://placehold.co/800x1000?text=Outfit+2", title: "Summer Casual",      tags: ["Casual", "Light", "Minimal"] },
-  { id: 3, img: "https://placehold.co/800x1000?text=Outfit+3", title: "Layered Fit",        tags: ["Layered", "Cozy", "Neutral"] },
-  { id: 4, img: "https://placehold.co/800x1000?text=Outfit+4", title: "Denim Rework",       tags: ["DIY", "Denim"] },
-  { id: 5, img: "https://placehold.co/800x1000?text=Outfit+5", title: "Y2K Throwback",      tags: ["Y2K", "Thrifted"] },
-  { id: 6, img: "https://placehold.co/800x1000?text=Outfit+6", title: "Prep Revival",       tags: ["Preppy", "Clean"] },
-];
+import ScrollFloat from "../components/ScrollFloat";
 
 // Triptych images for the About section
 const aboutImages = [
@@ -19,14 +8,6 @@ const aboutImages = [
   "https://placehold.co/600x800?text=Look+2",
   "https://placehold.co/600x800?text=Look+3",
 ];
-
-function Tag({ children }) {
-  return (
-    <span className="px-2.5 py-1 rounded-full text-xs bg-white/70 border border-line text-charcoal/80">
-      {children}
-    </span>
-  );
-}
 
 /** Reusable card for the mosaic */
 function CollectionCard({ title, img, className = "", children }) {
@@ -53,19 +34,37 @@ function CollectionCard({ title, img, className = "", children }) {
 export default function Home() {
   return (
     <div className="bg-creme">
-      {/* 1) HERO (unchanged width — you like it as is) */}
+      {/* 1) HERO — play-on-mount animations for title + subtitle */}
       <section
         className="relative max-w-6xl mx-auto flex items-center justify-center px-4"
         style={{ minHeight: "90svh" }}
       >
         <div className="text-center">
-          <h1 className="font-clash font-bold text-charcoal text-[4rem] sm:text-[6rem] md:text-[8rem] leading-none">
+          {/* HERO title — plays once on mount */}
+          <ScrollFloat
+            as="h1"
+            playOnMount
+            animationDuration={1}
+            ease="power3.out"
+            containerClassName="m-0"
+            textClassName="font-clash font-bold text-charcoal text-[4rem] sm:text-[6rem] md:text-[8rem] leading-none"
+          >
             throw a fit
-          </h1>
-          <p className="mt-6 text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] text-charcoal/70">
-            don't know what to wear? throw a fit.
-          </p>
+          </ScrollFloat>
 
+          {/* HERO subtitle — also plays on mount, slightly delayed */}
+          <ScrollFloat
+            as="p"
+            playOnMount
+            mountDelay={0.25}
+            animationDuration={0.9}
+            ease="power3.out"
+            stagger={0.01}
+            containerClassName="mt-6 m-0"
+            textClassName="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] text-charcoal/70"
+          >
+            {"don't know what to wear? throw a fit."}
+          </ScrollFloat>
         </div>
 
         {/* scroll cue */}
@@ -81,7 +80,7 @@ export default function Home() {
         </a>
       </section>
 
-      {/* 2) ABOUT — wider container + 12-col layout for fuller content width */}
+      {/* 2) ABOUT — wider container + 12-col layout */}
       <section id="about" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <div className="grid lg:grid-cols-12 gap-8 items-center">
           {/* LEFT images: span 7/12 on large screens */}
@@ -102,17 +101,47 @@ export default function Home() {
 
           {/* RIGHT text: span 5/12 on large screens */}
           <div className="lg:col-span-5">
-            <h2 className="text-3xl md:text-4xl font-bold text-charcoal">
+            <ScrollFloat
+              as="h2"
+              animationDuration={1.1}
+              ease="back.out(1.4)"
+              scrollStart="top 90%"
+              scrollEnd="top 45%"
+              stagger={0.022}
+              containerClassName="m-0"
+              textClassName="text-3xl md:text-4xl font-bold text-charcoal"
+            >
               find the fit
-            </h2>
-            <p className="mt-4 text-charcoal/70">
-              Throw a Fit is a community-driven space to share thrifted outfits,
-              tag the pieces, and discover new styles. Think of it like your
-              curated, fashion-forward moodboard — powered by real people and real finds.
-            </p>
+            </ScrollFloat>
+
+            <ScrollFloat
+              as="p"
+              animationDuration={1.05}
+              ease="power2.out"
+              scrollStart="top 95%"
+              scrollEnd="top 55%"
+              stagger={0.005}
+              containerClassName="mt-4 m-0"
+              textClassName="text-charcoal/70"
+            >
+              Throw a Fit is a community-driven space to share thrifted outfits, tag the pieces, and discover new styles. Think of it like your curated,
+              fashion-forward moodboard — powered by real people and real finds.
+            </ScrollFloat>
 
             <div className="mt-6">
-              <h3 className="text-xl font-normal text-charcoal">What you can do</h3>
+              <ScrollFloat
+                as="h3"
+                animationDuration={0.9}
+                ease="power2.out"
+                scrollStart="top 96%"
+                scrollEnd="top 70%"
+                stagger={0.01}
+                containerClassName="m-0"
+                textClassName="text-xl font-normal text-charcoal"
+              >
+                What you can do
+              </ScrollFloat>
+
               <ul className="mt-2 space-y-2 text-charcoal/80 list-disc list-inside">
                 <li>Upload your fit and tag each garment</li>
                 <li>Browse looks by style, color and vibe</li>
@@ -138,13 +167,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3) FEATURED STYLES — wider container; height/shape unchanged */}
+      {/* 3) FEATURED STYLES — symmetric mosaic */}
       <section id="collections" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-charcoal">fitography</h2>
-          <p className="mt-2 text-charcoal/70">
+          <ScrollFloat
+            as="h2"
+            animationDuration={1.05}
+            ease="power3.out"
+            scrollStart="top 92%"
+            scrollEnd="top 50%"
+            stagger={0.02}
+            containerClassName="m-0"
+            textClassName="text-2xl md:text-3xl font-bold text-charcoal"
+          >
+            fitography
+          </ScrollFloat>
+
+          <ScrollFloat
+            as="p"
+            animationDuration={0.95}
+            ease="power2.out"
+            scrollStart="top 95%"
+            scrollEnd="top 60%"
+            stagger={0.006}
+            containerClassName="mt-2 m-0"
+            textClassName="text-charcoal/70"
+          >
             Dare to mix and match. Check our collections to level up your fashion game.
-          </p>
+          </ScrollFloat>
         </header>
 
         <div
@@ -165,9 +215,7 @@ export default function Home() {
             title="Vintage"
             img="https://placehold.co/1200x800?text=Vintage"
             className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3 lg:row-span-3"
-          >
-            
-          </CollectionCard>
+          />
 
           {/* MIDDLE column (inverse) */}
           <CollectionCard
@@ -194,8 +242,6 @@ export default function Home() {
           />
         </div>
       </section>
-
-      
     </div>
   );
 }
