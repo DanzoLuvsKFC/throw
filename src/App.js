@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 
 import Container from "./components/Container";
 import StaggeredMenu from "./components/StaggeredMenu";
+import BootGate from "./components/BootGate";
 
 function App() {
   const menuItems = useMemo(
@@ -37,7 +38,16 @@ function App() {
       <main>
         <Container className="py-4">
           <Routes>
-            <Route path="/" element={<Home />} />
+            {/* Home wrapped in BootGate so the hero anims wait nicely */}
+            <Route
+              path="/"
+              element={
+                <BootGate preloadImages={[]} minimumShowMs={700}>
+                  <Home />
+                </BootGate>
+              }
+            />
+
             <Route path="/outfit/:id" element={<OutfitPost />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/profile/:username" element={<Profile />} />
@@ -58,11 +68,11 @@ function App() {
           showLogo={false}
           logoUrl="/logo.svg"
 
-          /* >>> THEME <<< */
-          colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]} // sweep layers
-          accentColor="#ffffe3"                                 // hover/numbering/socials
-          menuButtonColor="#111111"                             // toggle when closed
-          openMenuButtonColor="#ffffe3"                         // toggle when open (over dark panel)
+          /* theme */
+          colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]}
+          accentColor="#ffffe3"
+          menuButtonColor="#111111"
+          openMenuButtonColor="#ffffe3"
           changeMenuColorOnOpen={true}
 
           onMenuOpen={() => console.log("Menu opened")}
