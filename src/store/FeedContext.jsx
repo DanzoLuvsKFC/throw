@@ -41,7 +41,7 @@ export function FeedProvider({ children }) {
       src,
       caption,
       tags,
-      user,           // simple string username for now
+      user, // simple string username for now
       createdAt: Date.now(),
     };
     setPosts((arr) => [post, ...arr]);

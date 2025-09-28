@@ -1,54 +1,33 @@
+// src/pages/Home.js
+import { useMemo, useState } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 
-// Curated mosaic (replace these URLs with your photos)
-const curated = {
-  leftTop:  "https://placehold.co/1200x800?text=Streetwear",
-  leftBot:  "https://placehold.co/1200x800?text=Vintage",
-  midTop:   "https://placehold.co/1200x800?text=Techwear",
-  midBot:   "https://placehold.co/1200x800?text=Athleisure",
-  rightTop: "https://placehold.co/1200x800?text=Minimalist",
-  rightBot: "https://placehold.co/1200x800?text=Y2K",
-};
-
-// Triptych images for the About section (optional)
+/* Edge-to-edge triptych images for the About section */
 const aboutImages = [
-  "https://placehold.co/600x800?text=Look+1",
-  "https://placehold.co/600x800?text=Look+2",
-  "https://placehold.co/600x800?text=Look+3",
+  "https://placehold.co/800x1100?text=Outfit+1",
+  "https://placehold.co/800x1100?text=Outfit+2",
+  "https://placehold.co/800x1100?text=Outfit+3",
 ];
 
-function CollectionCard({ title, img, className = "" }) {
+/* Masonry-friendly card for uploads */
+function FitCard({ post }) {
   return (
-    <div className={`group relative overflow-hidden rounded-2xl border border-line bg-white/70 ${className}`}>
-      <img
-        src={img}
-        alt={title}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-black/20" />
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center text-creme p-4">
-        <h3 className="text-2xl md:text-3xl font-normal">{title}</h3>
-      </div>
-    </div>
-  );
-}
-
-function UploadCard({ post }) {
-  return (
-    <article className="group relative overflow-hidden rounded-2xl border border-charcoal/10 bg-white">
+    <article className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-charcoal/10 bg-white group">
       <div className="relative">
         <img
           src={post.src}
           alt={post.caption || "uploaded fit"}
-          className="w-full h-72 object-cover md:h-80"
+          className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
           loading="lazy"
         />
         {post.tags?.length ? (
           <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
             {post.tags.slice(0, 3).map((t) => (
-              <span key={t} className="rounded-full bg-creme/95 text-charcoal text-xs px-2 py-[2px] border border-charcoal/10">
+              <span
+                key={t}
+                className="rounded-full bg-creme/95 text-charcoal text-xs px-2 py-[2px] border border-charcoal/10"
+              >
                 {t}
               </span>
             ))}
@@ -60,10 +39,14 @@ function UploadCard({ post }) {
           </div>
         ) : null}
       </div>
-      <div className="p-3">
-        <div className="text-sm text-charcoal/60">@{post.user} • {new Date(post.createdAt).toLocaleDateString()}</div>
-        {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
-      </div>
+      {(post.caption || post.user) && (
+        <div className="p-3">
+          <div className="text-sm text-charcoal/60">
+            @{post.user ?? "guest"} • {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+          </div>
+          {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
+        </div>
+      )}
     </article>
   );
 }
@@ -71,10 +54,63 @@ function UploadCard({ post }) {
 export default function Home() {
   const { posts } = useFeed();
 
+  // --- Fitography search/filter state
+  const [query, setQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  const allTags = useMemo(() => {
+    const map = new Map();
+    posts.forEach((p) =>
+      (p.tags || []).forEach((t) => {
+        const key = t.trim().toLowerCase();
+        if (!key) return;
+        map.set(key, (map.get(key) || 0) + 1);
+      })
+    );
+    return Array.from(map.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([t]) => t);
+  }, [posts]);
+
+  const filtered = useMemo(() => {
+    const raw = query.trim().toLowerCase();
+    const isUserQuery = raw.startsWith("@");
+    const q = isUserQuery ? raw.slice(1) : raw;
+
+    return posts.filter((p) => {
+      const tags = (p.tags || []).map((t) => t.toLowerCase());
+      const user = (p.user || "").toLowerCase();
+      const caption = (p.caption || "").toLowerCase();
+
+      const hasAllSelected =
+        selectedTags.length === 0 || selectedTags.every((t) => tags.includes(t));
+
+      let matchesQuery = true;
+      if (q) {
+        matchesQuery = isUserQuery
+          ? user.includes(q)
+          : caption.includes(q) || user.includes(q) || tags.some((t) => t.includes(q));
+      }
+
+      return hasAllSelected && matchesQuery;
+    });
+  }, [posts, query, selectedTags]);
+
+  const toggleTag = (t) =>
+    setSelectedTags((arr) => (arr.includes(t) ? arr.filter((x) => x !== t) : [...arr, t]));
+
+  const clearFilters = () => {
+    setQuery("");
+    setSelectedTags([]);
+  };
+
   return (
     <div className="bg-creme">
       {/* HERO */}
-      <section className="relative max-w-6xl mx-auto flex items-center justify-center px-4" style={{ minHeight: "90svh" }}>
+      <section
+        className="relative max-w-6xl mx-auto flex items-center justify-center px-4"
+        style={{ minHeight: "90svh" }}
+      >
         <div className="text-center">
           <ScrollFloat
             as="h1"
@@ -101,6 +137,7 @@ export default function Home() {
           </ScrollFloat>
         </div>
 
+        {/* scroll cue */}
         <a
           href="#about"
           className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
@@ -113,17 +150,18 @@ export default function Home() {
         </a>
       </section>
 
-      {/* ABOUT */}
+      {/* SECTION 2 — ABOUT (edge-to-edge triptych + copy) */}
       <section id="about" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <div className="grid lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-7 bg-white/70 border border-line rounded-3xl p-3">
+          {/* LEFT: edge-to-edge images */}
+          <div className="lg:col-span-7">
             <div className="grid grid-cols-3 gap-3">
               {aboutImages.map((src, i) => (
-                <div key={i} className="overflow-hidden rounded-2xl">
+                <div key={i}>
                   <img
                     src={src}
-                    alt={`About visual ${i + 1}`}
-                    className="w-full h-[220px] md:h-[360px] object-cover transition-transform duration-500 hover:scale-105"
+                    alt={`Outfit ${i + 1}`}
+                    className="w-full h-[240px] md:h-[360px] object-cover"
                     loading="lazy"
                   />
                 </div>
@@ -131,6 +169,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* RIGHT: copy */}
           <div className="lg:col-span-5">
             <ScrollFloat
               as="h2"
@@ -140,7 +179,7 @@ export default function Home() {
               scrollEnd="top 45%"
               stagger={0.022}
               containerClassName="m-0"
-              textClassName="text-3xl md:text-4xl font-bold text-charcoal"
+              textClassName="font-clash text-3xl md:text-4xl font-bold text-charcoal"
             >
               find the fit
             </ScrollFloat>
@@ -155,14 +194,15 @@ export default function Home() {
               containerClassName="mt-4 m-0"
               textClassName="text-charcoal/70"
             >
-              throw a Fit is a community-driven space to share thrifted outfits, tag the pieces, and discover new styles. Think of it like your curated,
-              fashion-forward moodboard, powered by real people and real finds.
+              Throw a Fit is a community-driven space to share thrifted outfits, tag the pieces,
+              and discover new styles. Think of it like your curated, fashion-forward moodboard,
+              powered by real people and real finds.
             </ScrollFloat>
           </div>
         </div>
       </section>
 
-      {/* FEATURED STYLES — curated mosaic */}
+      {/* SECTION 3 — FITOGRAPHY (Explore uploads + search) */}
       <section id="collections" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
           <ScrollFloat
@@ -173,10 +213,11 @@ export default function Home() {
             scrollEnd="top 50%"
             stagger={0.02}
             containerClassName="m-0"
-            textClassName="text-2xl md:text-3xl font-bold text-charcoal"
+            textClassName="font-clash text-2xl md:text-3xl font-bold text-charcoal"
           >
             fitography
           </ScrollFloat>
+
           <ScrollFloat
             as="p"
             animationDuration={0.95}
@@ -187,67 +228,66 @@ export default function Home() {
             containerClassName="mt-2 m-0"
             textClassName="text-charcoal/70"
           >
-            dare to mix and match. Check our collections to level up your fashion game.
+            search by tag, caption, or @user — with no filters you’ll see everything.
           </ScrollFloat>
+
+          {/* search + quick tags */}
+          <div className="mx-auto mt-4 max-w-xl">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="search tags, captions, or @user…"
+              aria-label="Search fitography"
+              className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
+            />
+            {allTags.length > 0 && (
+              <div className="mt-3 flex flex-wrap justify-center gap-2">
+                {allTags.slice(0, 12).map((t) => {
+                  const active = selectedTags.includes(t);
+                  return (
+                    <button
+                      type="button"
+                      key={t}
+                      onClick={() => toggleTag(t)}
+                      className={`px-3 py-1 rounded-full text-sm border transition ${
+                        active
+                          ? "bg-charcoal text-creme border-charcoal"
+                          : "bg-white text-charcoal border-charcoal/15 hover:border-charcoal/30"
+                      }`}
+                      aria-pressed={active}
+                    >
+                      #{t}
+                    </button>
+                  );
+                })}
+                {(selectedTags.length > 0 || query) && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="px-3 py-1 rounded-full text-sm border border-charcoal/15 bg-white text-charcoal hover:border-charcoal/30"
+                  >
+                    clear
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </header>
 
-        <div
-          className="
-            grid gap-4
-            sm:grid-cols-2 sm:auto-rows-[170px]
-            lg:grid-cols-6 lg:grid-rows-[repeat(5,minmax(0,1fr))]
-            lg:h-[min(82svh,700px)]
-          "
-        >
-          <CollectionCard title="Streetwear"  img={curated.leftTop}  className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2" />
-          <CollectionCard title="Vintage"     img={curated.leftBot}  className="sm:col-span-2 lg:col-start-1 lg:col-span-2 lg:row-start-3 lg:row-span-3" />
-          <CollectionCard title="Techwear"    img={curated.midTop}   className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-3" />
-          <CollectionCard title="Athleisure"  img={curated.midBot}   className="sm:col-span-2 lg:col-start-3 lg:col-span-2 lg:row-start-4 lg:row-span-2" />
-          <CollectionCard title="Minimalist"  img={curated.rightTop} className="sm:col-span-2 lg:col-start-5 lg:col-span-2 lg:row-start-1 lg:row-span-2" />
-          <CollectionCard title="Y2K"         img={curated.rightBot} className="sm:col-span-2 lg:col-start-5 lg:col-span-2 lg:row-start-3 lg:row-span-3" />
-        </div>
-      </section>
-
-      {/* RECENT FITS — user uploads */}
-      <section className="max-w-[100rem] mx-auto px-4 pt-2 pb-16">
-        <header className="mb-5 md:mb-7 text-center">
-          {/* Animated header + Clash font to match other headings */}
-          <ScrollFloat
-            as="h3"
-            animationDuration={1.05}
-            ease="power3.out"
-            scrollStart="top 92%"
-            scrollEnd="top 60%"
-            stagger={0.02}
-            containerClassName="m-0"
-            textClassName="font-clash text-xl md:text-2xl font-bold text-charcoal"
-          >
-            recent fits
-          </ScrollFloat>
-
-          {/* Optional: animate subtext too for consistency */}
-          <ScrollFloat
-            as="p"
-            animationDuration={0.95}
-            ease="power2.out"
-            scrollStart="top 96%"
-            scrollEnd="top 70%"
-            stagger={0.006}
-            containerClassName="mt-1 m-0"
-            textClassName="text-charcoal/70"
-          >
-            uploads from you and your friends (saved locally for now).
-          </ScrollFloat>
-        </header>
-
-        {posts.length === 0 ? (
-          <div className="p-6 text-center text-charcoal/70">
-            no uploads yet. hit <span className="font-medium">“flex a fit”</span> to post your first look.
+        {/* Masonry (Explore) — shows only matches if search/tags set, else all */}
+        {filtered.length === 0 ? (
+          <div className="p-8 text-center text-charcoal/60">
+            {posts.length === 0
+              ? "no uploads yet — hit “flex a fit” to add your first look."
+              : "no matches for your filters. try a different search."}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {posts.map((p) => (
-              <UploadCard key={p.id} post={p} />
+          <div
+            className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
+            style={{ columnFill: "balance" }}
+          >
+            {filtered.map((p) => (
+              <FitCard key={p.id} post={p} />
             ))}
           </div>
         )}
