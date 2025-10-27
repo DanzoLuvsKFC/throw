@@ -50,11 +50,11 @@ function FloatIn({
     return () => ctx.revert();
   }, [duration, delay, y, ease, start]);
 
-    return (
-      <Tag ref={ref} className={className}>
-        {children}
-      </Tag>
-    );
+  return (
+    <Tag ref={ref} className={className}>
+      {children}
+    </Tag>
+  );
 }
 
 /* Masonry-friendly card for uploads */
@@ -111,32 +111,31 @@ export default function Home() {
 
   const titleWrapRef = useRef(null);
   const taglineWrapRef = useRef(null);
-  const heroImagesRef = useRef(null); // NEW: right-side hero images
+  const heroImagesRef = useRef(null); // right-side hero images
 
-  /* 🔹 HERO title + tagline glide-left and images glide-in from right (responsive-safe) */
+  /* HERO: title/tagline glide left; images glide in from right */
   useLayoutEffect(() => {
     const title = titleWrapRef.current;
     const tagline = taglineWrapRef.current;
-    const images = heroImagesRef.current; // may be null on mobile (hidden)
+    const images = heroImagesRef.current;
     if (!title || !tagline) return;
 
     const mm = gsap.matchMedia();
 
     mm.add(
       {
-        small: "(max-width: 639px)",                        // < sm
-        sm: "(min-width: 640px) and (max-width: 1023px)",   // sm..md
-        lg: "(min-width: 1024px) and (max-width: 1279px)",  // lg
-        xl: "(min-width: 1280px)",                          // xl+
+        small: "(max-width: 639px)",
+        sm: "(min-width: 640px) and (max-width: 1023px)",
+        lg: "(min-width: 1024px) and (max-width: 1279px)",
+        xl: "(min-width: 1280px)",
       },
       (ctx) => {
         const { small, sm, lg, xl } = ctx.conditions;
 
-        // Milder offsets so text never clips off-screen
-        const titleX = small ? -40 : sm ? -100 : lg ? -160 : -240;
-        const tagX   = small ? -30 : sm ? -80  : lg ? -140 : -220;
+        // ⬇️ Reduced negative offsets so the title/tagline sit more to the right (responsive)
+        const titleX = small ? -36 : sm ? -90 : lg ? -140 : -190;
+        const tagX   = small ? -28 : sm ? -70 : lg ? -110 : -160;
 
-        // Images slide from right to 0; stronger push on larger screens
         const imgFromX = small ? 0 : sm ? 160 : lg ? 220 : 260;
 
         gsap.set([title, tagline], { x: 0 });
@@ -144,7 +143,6 @@ export default function Home() {
 
         const tl = gsap.timeline({ delay: 1.0, defaults: { ease: "power3.inOut" } });
 
-        // Images start just before text moves to feel like they "push" the text
         if (!small && images) {
           tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
         }
@@ -212,18 +210,23 @@ export default function Home() {
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
       <section
-        className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 overflow-hidden text-center"
+        className={
+          // keep visible and center stack
+          "relative w-full max-w-7xl mx-auto flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 text-center overflow-visible " +
+          // slightly less right padding so the title sits closer to the images
+          "lg:pr-[12vw] xl:pr-[15vw] 2xl:pr-[18vw]"
+        }
         style={{ minHeight: "90svh" }}
       >
-        {/* Right-side images (lg+). Absolutely positioned so they don’t reflow the title. */}
+        {/* Right-side images (lg+). Keep inside the section bounds */}
         <div
           ref={heroImagesRef}
-          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 pr-4 sm:pr-6 md:pr-8 w-[44%] max-w-[560px]"
+          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[54%] max-w-[760px]"
           aria-hidden="true"
         >
-          <div className="grid grid-cols-2 gap-3">
-            {/* Left tall image spans two rows */}
-            <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[52svh] min-h-[380px]">
+          <div className="grid grid-cols-2 gap-5">
+            {/* Left tall image spans two rows — bigger */}
+            <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[500px]">
               <img
                 src={aboutImages[0]}
                 alt="fit 1"
@@ -233,8 +236,8 @@ export default function Home() {
               />
             </div>
 
-            {/* Right top */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[24svh] min-h-[180px]">
+            {/* Right top — bigger */}
+            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[230px]">
               <img
                 src={aboutImages[1]}
                 alt="fit 2"
@@ -244,8 +247,8 @@ export default function Home() {
               />
             </div>
 
-            {/* Right bottom */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[24svh] min-h-[180px]">
+            {/* Right bottom — bigger */}
+            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[230px]">
               <img
                 src={aboutImages[2]}
                 alt="fit 3"
@@ -257,7 +260,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* TITLE */}
+        {/* TITLE (removed strong negative margins so it's not too far left) */}
         <div ref={titleWrapRef} className="inline-block will-change-transform">
           <ScrollFloat
             as="h1"
@@ -271,10 +274,10 @@ export default function Home() {
           </ScrollFloat>
         </div>
 
-        {/* TAGLINE */}
+        {/* TAGLINE (tiny nudge only) */}
         <div
           ref={taglineWrapRef}
-          className="inline-block mt-0 will-change-transform -ml-4 sm:-ml-6 md:-ml-8"
+          className="inline-block mt-0 will-change-transform -ml-1 sm:-ml-2 md:-ml-3"
         >
           <ScrollFloat
             as="p"
