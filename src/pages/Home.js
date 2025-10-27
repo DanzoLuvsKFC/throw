@@ -1,18 +1,15 @@
+// src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
-
-/* GSAP reveal for non-text elements (images, blocks) */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-
-// --- import your 3 local photos (paths are from src/pages -> src/assets/...)
 import look1 from "../assets/fonts/fits/fit.jpg";
 import look2 from "../assets/fonts/fits/fit 8.jpg";
 import look3 from "../assets/fonts/fits/fit 12.jpg";
+
 gsap.registerPlugin(ScrollTrigger);
-/* Edge-to-edge triptych images for the About section */
+
 const aboutImages = [look1, look2, look3];
 
 /* Simple float/fade-in reveal (no character split, keeps spacing perfect) */
@@ -106,13 +103,51 @@ function FitCard({ post }) {
   );
 }
 
+/* ------------------ HOME ------------------ */
 export default function Home() {
   const { posts } = useFeed();
-
-  // --- Fitography search/filter state
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
 
+  const titleWrapRef = useRef(null);
+  const taglineWrapRef = useRef(null);
+
+  /* 🔹 HERO title + tagline glide-left (responsive-safe) */
+  useLayoutEffect(() => {
+    const title = titleWrapRef.current;
+    const tagline = taglineWrapRef.current;
+    if (!title || !tagline) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        small: "(max-width: 639px)",                        // < sm
+        sm: "(min-width: 640px) and (max-width: 1023px)",   // sm..md
+        lg: "(min-width: 1024px) and (max-width: 1279px)",  // lg
+        xl: "(min-width: 1280px)",                          // xl+
+      },
+      (ctx) => {
+        const { small, sm, lg, xl } = ctx.conditions;
+
+        // Milder offsets so text never clips off-screen
+        const titleX = small ? -40 : sm ? -100 : lg ? -160 : -240;
+        const tagX   = small ? -30 : sm ? -80  : lg ? -140 : -220;
+
+        gsap.set([title, tagline], { x: 0 });
+
+        const tl = gsap.timeline({ delay: 1.0, defaults: { ease: "power3.inOut" } });
+        tl.to(title, { x: titleX, duration: 1.1 }, 0)
+          .to(tagline, { x: tagX, duration: 1.0 }, 0.2);
+
+        return () => tl.kill();
+      }
+    );
+
+    return () => mm.kill();
+  }, []);
+
+  /* Fitography filtering logic */
   const allTags = useMemo(() => {
     const map = new Map();
     posts.forEach((p) =>
@@ -152,7 +187,9 @@ export default function Home() {
   }, [posts, query, selectedTags]);
 
   const toggleTag = (t) =>
-    setSelectedTags((arr) => (arr.includes(t) ? arr.filter((x) => x !== t) : [...arr, t]));
+    setSelectedTags((arr) =>
+      arr.includes(t) ? arr.filter((x) => x !== t) : [...arr, t]
+    );
 
   const clearFilters = () => {
     setQuery("");
@@ -161,23 +198,27 @@ export default function Home() {
 
   return (
     <div className="bg-creme">
-      {/* HERO */}
+      {/* ---------------- HERO ---------------- */}
       <section
-        className="relative max-w-6xl mx-auto flex items-center justify-center px-4"
+        className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 overflow-hidden text-center"
         style={{ minHeight: "90svh" }}
       >
-        <div className="text-center">
+        {/* TITLE */}
+        <div ref={titleWrapRef} className="inline-block will-change-transform">
           <ScrollFloat
             as="h1"
             playOnMount
             animationDuration={1}
             ease="power3.out"
             containerClassName="m-0"
-            textClassName="font-clash font-bold text-charcoal text-[4rem] sm:text-[6rem] md:text-[8rem] leading-none"
+            textClassName="font-clash font-bold text-charcoal text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
           >
             throw a fit
           </ScrollFloat>
+        </div>
 
+        {/* TAGLINE */}
+        <div ref={taglineWrapRef} className="inline-block mt-5 will-change-transform">
           <ScrollFloat
             as="p"
             playOnMount
@@ -185,30 +226,35 @@ export default function Home() {
             animationDuration={0.9}
             ease="power3.out"
             stagger={0.01}
-            containerClassName="mt-6 m-0"
-            textClassName="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] text-charcoal/70"
+            containerClassName="m-0"
+            textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
           >
             {"don't know what to wear? throw a fit."}
           </ScrollFloat>
         </div>
 
-        {/* scroll cue */}
+        {/* SCROLL CUE */}
         <a
           href="#about"
           className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
           aria-label="Scroll to about section"
         >
           <span className="text-xs tracking-wider">scroll</span>
-          <svg className="w-5 h-5 mt-1 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg
+            className="w-5 h-5 mt-1 animate-bounce"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
             <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </a>
       </section>
 
-      {/* SECTION 2 — ABOUT (edge-to-edge triptych + copy) */}
-      <section id="about" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
+      {/* ---------------- ABOUT ---------------- */}
+      <section id="about" className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <div className="grid lg:grid-cols-12 gap-8 items-center">
-          {/* LEFT: edge-to-edge images, rounded, animated */}
+          {/* LEFT: images */}
           <div className="lg:col-span-7">
             <div className="grid grid-cols-3 gap-3">
               {aboutImages.map((src, i) => (
@@ -216,7 +262,7 @@ export default function Home() {
                   <img
                     src={src}
                     alt={`Outfit ${i + 1}`}
-                    className="w-full h-[240px] md:h-[360px] object-cover"
+                    className="w-full h-[220px] md:h-[320px] lg:h-[360px] object-cover"
                     loading="lazy"
                     decoding="async"
                   />
@@ -225,7 +271,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RIGHT: copy (use FloatIn to avoid weird word breaking) */}
+          {/* RIGHT: copy */}
           <div className="lg:col-span-5">
             <ScrollFloat
               as="h2"
@@ -235,7 +281,7 @@ export default function Home() {
               scrollEnd="top 45%"
               stagger={0.022}
               containerClassName="m-0"
-              textClassName="font-clash text-3xl md:text-4xl font-bold text-charcoal"
+              textClassName="font-clash text-2xl md:text-3xl lg:text-4xl font-bold text-charcoal"
             >
               find the fit
             </ScrollFloat>
@@ -249,8 +295,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 3 — FITOGRAPHY (Explore uploads + search) */}
-      <section id="collections" className="max-w-[100rem] mx-auto px-4 py-12 md:py-16">
+      {/* ---------------- FITOGRAPHY ---------------- */}
+      <section id="collections" className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
           <ScrollFloat
             as="h2"
