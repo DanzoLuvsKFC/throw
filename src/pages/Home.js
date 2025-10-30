@@ -132,21 +132,17 @@ export default function Home() {
       (ctx) => {
         const { small, sm, lg, xl } = ctx.conditions;
 
-        // ⬇️ Reduced negative offsets so the title/tagline sit more to the right (responsive)
-        const titleX = small ? -36 : sm ? -90 : lg ? -140 : -190;
-        const tagX   = small ? -28 : sm ? -70 : lg ? -110 : -160;
+        // Keep a modest nudge so text doesn't fly off-screen
+        const titleX = small ? -36 : sm ? -80 : lg ? -110 : -130;
+        const tagX   = small ? -24 : sm ? -60 : lg ? -85  : -105;
 
-        const imgFromX = small ? 0 : sm ? 160 : lg ? 220 : 260;
+        const imgFromX = small ? 0 : sm ? 120 : lg ? 160 : 200;
 
         gsap.set([title, tagline], { x: 0 });
         if (images) gsap.set(images, { x: imgFromX, autoAlpha: 0 });
 
         const tl = gsap.timeline({ delay: 1.0, defaults: { ease: "power3.inOut" } });
-
-        if (!small && images) {
-          tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
-        }
-
+        if (!small && images) tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
         tl.to(title, { x: titleX, duration: 1.1 }, 0.0)
           .to(tagline, { x: tagX, duration: 1.0 }, 0.2);
 
@@ -210,23 +206,45 @@ export default function Home() {
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
       <section
-        className={
-          // keep visible and center stack
-          "relative w-full max-w-7xl mx-auto flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 text-center overflow-visible " +
-          // slightly less right padding so the title sits closer to the images
-          "lg:pr-[12vw] xl:pr-[15vw] 2xl:pr-[18vw]"
-        }
-        style={{ minHeight: "90svh" }}
+        className="relative w-full max-w-7xl mx-auto px-6 md:px-10 overflow-visible text-center lg:text-left flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20"
+        style={{ minHeight: "100svh" }}
       >
-        {/* Right-side images (lg+). Keep inside the section bounds */}
-        <div
-          ref={heroImagesRef}
-          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[54%] max-w-[760px]"
-          aria-hidden="true"
-        >
-          <div className="grid grid-cols-2 gap-5">
-            {/* Left tall image spans two rows — bigger */}
-            <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[500px]">
+        {/* LEFT: Title + Tagline — takes half, keeps symmetry */}
+        <div className="flex-1">
+          <div ref={titleWrapRef}>
+            <ScrollFloat
+              as="h1"
+              playOnMount
+              animationDuration={1}
+              ease="power3.out"
+              containerClassName="m-0"
+              textClassName="font-clash font-bold text-charcoal text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
+            >
+              throw a fit
+            </ScrollFloat>
+          </div>
+
+          <div ref={taglineWrapRef} className="mt-3">
+            <ScrollFloat
+              as="p"
+              playOnMount
+              mountDelay={0.25}
+              animationDuration={0.9}
+              ease="power3.out"
+              stagger={0.01}
+              containerClassName="m-0"
+              textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
+            >
+              {"don't know what to wear? throw a fit."}
+            </ScrollFloat>
+          </div>
+        </div>
+
+        {/* RIGHT: Images — takes the other half */}
+        <div className="flex-1 hidden lg:block">
+          <div ref={heroImagesRef} className="grid grid-cols-2 gap-5">
+            {/* Left tall image */}
+            <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[480px]">
               <img
                 src={aboutImages[0]}
                 alt="fit 1"
@@ -236,8 +254,8 @@ export default function Home() {
               />
             </div>
 
-            {/* Right top — bigger */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[230px]">
+            {/* Right top */}
+            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
               <img
                 src={aboutImages[1]}
                 alt="fit 2"
@@ -247,8 +265,8 @@ export default function Home() {
               />
             </div>
 
-            {/* Right bottom — bigger */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[230px]">
+            {/* Right bottom */}
+            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
               <img
                 src={aboutImages[2]}
                 alt="fit 3"
@@ -258,39 +276,6 @@ export default function Home() {
               />
             </div>
           </div>
-        </div>
-
-        {/* TITLE (removed strong negative margins so it's not too far left) */}
-        <div ref={titleWrapRef} className="inline-block will-change-transform">
-          <ScrollFloat
-            as="h1"
-            playOnMount
-            animationDuration={1}
-            ease="power3.out"
-            containerClassName="m-0"
-            textClassName="font-clash font-bold text-charcoal text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
-          >
-            throw a fit
-          </ScrollFloat>
-        </div>
-
-        {/* TAGLINE (tiny nudge only) */}
-        <div
-          ref={taglineWrapRef}
-          className="inline-block mt-0 will-change-transform -ml-1 sm:-ml-2 md:-ml-3"
-        >
-          <ScrollFloat
-            as="p"
-            playOnMount
-            mountDelay={0.25}
-            animationDuration={0.9}
-            ease="power3.out"
-            stagger={0.01}
-            containerClassName="m-0"
-            textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
-          >
-            {"don't know what to wear? throw a fit."}
-          </ScrollFloat>
         </div>
 
         {/* SCROLL CUE */}
