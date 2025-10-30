@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        creme: "#ffffe3", // your main background
-        charcoal: "#2E2E2E", // for text
+        creme: "#ffffe3", 
+        charcoal: "#2E2E2E", 
       },
       fontFamily: {
         clash: ["ClashDisplay", "sans-serif"],
