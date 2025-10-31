@@ -109,42 +109,47 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const titleWrapRef = useRef(null);
-  const taglineWrapRef = useRef(null);
-  const heroImagesRef = useRef(null); // right-side hero images
+  const textWrapRef = useRef(null);     // wrapper that slides left
+  const titleRef = useRef(null);
+  const tagRef = useRef(null);
+  const heroImagesRef = useRef(null);   // right-side images (absolute on lg+)
 
-  /* HERO: title/tagline glide left; images glide in from right */
+  /* HERO animation: text starts centered, slides left; images slide in from right (lg+) */
   useLayoutEffect(() => {
-    const title = titleWrapRef.current;
-    const tagline = taglineWrapRef.current;
+    const textWrap = textWrapRef.current;
+    const title = titleRef.current;
+    const tag = tagRef.current;
     const images = heroImagesRef.current;
-    if (!title || !tagline) return;
+    if (!textWrap || !title || !tag) return;
 
     const mm = gsap.matchMedia();
 
     mm.add(
       {
-        small: "(max-width: 639px)",
-        sm: "(min-width: 640px) and (max-width: 1023px)",
-        lg: "(min-width: 1024px) and (max-width: 1279px)",
-        xl: "(min-width: 1280px)",
+        base: "(min-width: 0px)",
+        lg: "(min-width: 1024px)",
       },
       (ctx) => {
-        const { small, sm, lg, xl } = ctx.conditions;
+        const isLg = ctx.conditions.lg;
 
-        // Keep a modest nudge so text doesn't fly off-screen
-        const titleX = small ? -36 : sm ? -80 : lg ? -110 : -130;
-        const tagX   = small ? -24 : sm ? -60 : lg ? -85  : -105;
+        // Reset
+        gsap.set([textWrap, title, tag], { clearProps: "all" });
+        if (images) gsap.set(images, { clearProps: "all" });
 
-        const imgFromX = small ? 0 : sm ? 120 : lg ? 160 : 200;
+        // Start: text centered in viewport; images off-canvas to the right (on lg+)
+        gsap.set(textWrap, { x: 0, autoAlpha: 1 });
+        if (images && isLg) gsap.set(images, { x: 240, autoAlpha: 0 });
 
-        gsap.set([title, tagline], { x: 0 });
-        if (images) gsap.set(images, { x: imgFromX, autoAlpha: 0 });
+        // Target: gently nudge left on lg+ (keep centered on small screens)
+        const textTargetX = isLg ? -350 : 0;
+        const titleDur = 1.1;
+        const tagDur = 1.0;
 
-        const tl = gsap.timeline({ delay: 1.0, defaults: { ease: "power3.inOut" } });
-        if (!small && images) tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
-        tl.to(title, { x: titleX, duration: 1.1 }, 0.0)
-          .to(tagline, { x: tagX, duration: 1.0 }, 0.2);
+        const tl = gsap.timeline({ delay: 0.6, defaults: { ease: "power3.inOut" } });
+        // Images push in slightly before text lands
+        if (images && isLg) tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
+        tl.to(textWrap, { x: textTargetX, duration: titleDur }, 0.0)
+          .to(tag, { x: isLg ? -20 : 0, duration: tagDur }, 0.15);
 
         return () => tl.kill();
       }
@@ -205,75 +210,74 @@ export default function Home() {
   return (
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
-      <section
-        className="relative w-full max-w-7xl mx-auto px-6 md:px-10 overflow-visible text-center lg:text-left flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20"
-        style={{ minHeight: "100svh" }}
-      >
-        {/* LEFT: Title + Tagline — takes half, keeps symmetry */}
-        <div className="flex-1">
-          <div ref={titleWrapRef}>
-            <ScrollFloat
-              as="h1"
-              playOnMount
-              animationDuration={1}
-              ease="power3.out"
-              containerClassName="m-0"
-              textClassName="font-clash font-bold text-charcoal text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
-            >
-              throw a fit
-            </ScrollFloat>
-          </div>
-
-          <div ref={taglineWrapRef} className="mt-3">
-            <ScrollFloat
-              as="p"
-              playOnMount
-              mountDelay={0.25}
-              animationDuration={0.9}
-              ease="power3.out"
-              stagger={0.01}
-              containerClassName="m-0"
-              textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
-            >
-              {"don't know what to wear? throw a fit."}
-            </ScrollFloat>
-          </div>
-        </div>
-
-        {/* RIGHT: Images — takes the other half */}
-        <div className="flex-1 hidden lg:block">
-          <div ref={heroImagesRef} className="grid grid-cols-2 gap-5">
-            {/* Left tall image */}
-            <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[480px]">
-              <img
-                src={aboutImages[0]}
-                alt="fit 1"
-                className="w-full h-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+      <section className="relative w-full overflow-visible">
+        {/* Outer keeps hero vertically centered */}
+        <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
+          {/* Text block starts centered; we slide this wrapper left on lg+ */}
+          <div ref={textWrapRef} className="text-center lg:text-left">
+            <div ref={titleRef}>
+              <ScrollFloat
+                as="h1"
+                playOnMount
+                animationDuration={1}
+                ease="power3.out"
+                containerClassName="m-0"
+                textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
+              >
+                throw a fit
+              </ScrollFloat>
             </div>
 
-            {/* Right top */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
-              <img
-                src={aboutImages[1]}
-                alt="fit 2"
-                className="w-full h-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+            <div ref={tagRef} className="mt-3">
+              <ScrollFloat
+                as="p"
+                playOnMount
+                mountDelay={0.25}
+                animationDuration={0.9}
+                ease="power3.out"
+                stagger={0.01}
+                containerClassName="m-0"
+                textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
+              >
+                {"don't know what to wear? throw a fit."}
+              </ScrollFloat>
             </div>
+          </div>
 
-            {/* Right bottom */}
-            <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
-              <img
-                src={aboutImages[2]}
-                alt="fit 3"
-                className="w-full h-full object-cover"
-                loading="eager"
-                decoding="async"
-              />
+          {/* Images live absolutely on the right so text can start centered cleanly */}
+          <div
+            ref={heroImagesRef}
+            className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
+            aria-hidden="true"
+          >
+            <div className="grid grid-cols-2 gap-5">
+              <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[480px]">
+                <img
+                  src={aboutImages[0]}
+                  alt="fit 1"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+              <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
+                <img
+                  src={aboutImages[1]}
+                  alt="fit 2"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+              <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
+                <img
+                  src={aboutImages[2]}
+                  alt="fit 3"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
             </div>
           </div>
         </div>
