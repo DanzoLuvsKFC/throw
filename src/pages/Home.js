@@ -1,5 +1,5 @@
 // src/pages/Home.js
-import { useMemo, useState, useLayoutEffect, useRef } from "react";
+import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
-/* Simple float/fade-in reveal */
+/* ---------- Simple float/fade-in on scroll ---------- */
 function FloatIn({
   as = "div",
   children,
@@ -57,7 +57,7 @@ function FloatIn({
   );
 }
 
-/* Masonry-friendly card for uploads */
+/* ---------- Card ---------- */
 function FitCard({ post }) {
   return (
     <FloatIn
@@ -103,6 +103,177 @@ function FitCard({ post }) {
   );
 }
 
+/* =========================================================
+   GLIDE TWO-SLOT HERO CAROUSEL (smoother + fade-in next image)
+   - Right image glides in; left image slides out with blur/fade, then fades fully.
+   - New “next” image on the right is decoded first, then fades/deblurs in (no pop).
+   - Keeps your exact sizes (h-[66svh], min-h-[480px], rounded-2xl, gap-5).
+   ========================================================= */
+
+// smooth-load into an existing <img> without popping
+function loadInto(imgEl, src) {
+  return new Promise((resolve) => {
+    // start hidden & slightly blurred; we’ll animate this out later
+    gsap.set(imgEl, { opacity: 0, filter: "blur(2px)" });
+
+    // swap the source
+    imgEl.src = src;
+
+    // wait until pixels are decoded (where supported)
+    if (imgEl.decode) {
+      imgEl
+        .decode()
+        .then(resolve)
+        .catch(resolve);
+    } else {
+      imgEl.onload = () => resolve();
+      imgEl.onerror = () => resolve();
+    }
+  });
+}
+
+function GlideTwoSlotCarousel({
+  images,
+  gapPx = 20,    // keep in sync with gap-5
+  cycleMs = 3400, // delay between cycles
+  glideMs = 1050, // glide duration
+}) {
+  const wrapRef = useRef(null);
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
+  const imgLeftRef = useRef(null);
+  const imgRightRef = useRef(null);
+  const timerRef = useRef(null);
+
+  const idxLeftRef = useRef(0);
+  const idxRightRef = useRef(1);
+
+  // Preload
+  useEffect(() => {
+    images.forEach((src) => {
+      const im = new Image();
+      im.src = src;
+    });
+  }, [images]);
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    const left = leftRef.current;
+    const right = rightRef.current;
+    const imgL = imgLeftRef.current;
+    const imgR = imgRightRef.current;
+    if (!wrap || !left || !right || !imgL || !imgR || images.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set([imgL, imgR], {
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        willChange: "transform, opacity, filter",
+      });
+
+      idxLeftRef.current = 0;
+      idxRightRef.current = images.length > 1 ? 1 : 0;
+      imgL.src = images[idxLeftRef.current];
+      imgR.src = images[idxRightRef.current];
+
+      gsap.set([left, right], { x: 0, opacity: 1, scale: 1, clearProps: "filter" });
+
+      const slotW = () => left.getBoundingClientRect().width;
+
+      const doCycle = () => {
+        const w = slotW();
+
+        const tl = gsap.timeline({
+          defaults: { ease: "power3.inOut", duration: glideMs / 1000 },
+        });
+
+        // Prep incoming (right) panel slightly subtle
+        gsap.set(right, { scale: 0.99, opacity: 0.92 });
+
+        // Right panel glides into left position
+        tl.to(right, { x: -(w + gapPx), scale: 1, opacity: 1 }, 0);
+
+        // Left panel slides out to right with soft depth cues
+        tl.to(
+          left,
+          { x: w + gapPx, opacity: 0.82, scale: 0.985, filter: "blur(1px)" },
+          0
+        );
+
+        // Final quick fade on the outgoing left so the swap is invisible
+        tl.to(
+          left,
+          { opacity: 0, duration: 0.2, ease: "power2.out" },
+          `>${-0.12}`
+        );
+
+        tl.add(async () => {
+          // Advance indices (new left is what used to be right)
+          idxLeftRef.current = idxRightRef.current;
+          idxRightRef.current = (idxRightRef.current + 1) % images.length;
+
+          // While left is invisible, update its src immediately
+          imgLeftRef.current.src = images[idxLeftRef.current];
+
+          // Reset panel transforms for next cycle
+          gsap.set([left, right], {
+            x: 0,
+            scale: 1,
+            opacity: 1,
+            clearProps: "filter",
+          });
+
+          // Smoothly load NEXT right image, then fade/deblur it in (no pop)
+          const nextSrc = images[idxRightRef.current];
+          await loadInto(imgRightRef.current, nextSrc);
+
+          gsap.to(imgRightRef.current, {
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.45,
+            ease: "power2.out",
+          });
+        });
+
+        tl.add(() => {
+          timerRef.current = gsap.delayedCall(cycleMs / 1000, doCycle);
+        });
+      };
+
+      // Start slightly later to sync with hero text
+      timerRef.current = gsap.delayedCall((cycleMs - 600) / 1000, doCycle);
+
+      const onResize = () =>
+        gsap.set([left, right], { x: 0, scale: 1, opacity: 1, clearProps: "filter" });
+      window.addEventListener("resize", onResize);
+
+      return () => {
+        window.removeEventListener("resize", onResize);
+        if (timerRef.current) timerRef.current.kill();
+      };
+    }, wrapRef);
+
+    return () => ctx.revert();
+  }, [images, gapPx, cycleMs, glideMs]);
+
+  return (
+    <div ref={wrapRef} className="grid grid-cols-2 gap-5">
+      {/* LEFT slot — original sizing */}
+      <div ref={leftRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
+        <img ref={imgLeftRef} alt="carousel left" />
+      </div>
+
+      {/* RIGHT slot — original sizing */}
+      <div ref={rightRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
+        <img ref={imgRightRef} alt="carousel right" />
+      </div>
+    </div>
+  );
+}
+
 /* ------------------ HOME ------------------ */
 export default function Home() {
   const { posts } = useFeed();
@@ -110,13 +281,12 @@ export default function Home() {
   const [selectedTags, setSelectedTags] = useState([]);
 
   // HERO refs
-  const textWrapRef = useRef(null); // wrapper that slides left
+  const textWrapRef = useRef(null);
   const titleRef = useRef(null);
-  const tagRef = useRef(null);      // tagline moves independently
+  const tagRef = useRef(null);
   const heroImagesRef = useRef(null);
 
-  /* HERO animation: title starts centered, slides left; images slide in from right (lg+).
-     Tagline can be nudged independently via tagOffsetX. */
+  /* Text starts centered → slides left; images slide in from right (lg+) */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
@@ -131,28 +301,20 @@ export default function Home() {
       (ctx) => {
         const isLg = ctx.conditions.lg;
 
-        // Reset any prior inline styles
         gsap.set([textWrap, title, tag], { clearProps: "all" });
         if (images) gsap.set(images, { clearProps: "all" });
 
-        // Start positions
         gsap.set(textWrap, { x: 0, autoAlpha: 1 });
         gsap.set(tag, { x: 0 });
-        if (images && isLg) gsap.set(images, { x: 320, autoAlpha: 0 });
+        if (images && isLg) gsap.set(images, { x: 280, autoAlpha: 0 });
 
-        // Targets (edit these to taste)
-        const textTargetX = isLg ? -320 : 0; // whole block (title + tagline)
-        const tagOffsetX  = isLg ? 24 : 0;   // tagline-only offset (right is positive)
+        const textTargetX = isLg ? -320 : 0;
+        const tagOffsetX = isLg ? 20 : 0;
 
-        const tl = gsap.timeline({ delay: 0.6, defaults: { ease: "power3.inOut" } });
+        const tl = gsap.timeline({ delay: 0.55, defaults: { ease: "power3.inOut" } });
 
-        // 1) images in a touch early
-        if (images && isLg) tl.to(images, { x: 70, autoAlpha: 1, duration: 1.1 }, 0.05);
-
-        // 2) move whole text block from center to left
-        tl.to(textWrap, { x: textTargetX, duration: 1.1 }, 0.0);
-
-        // 3) tagline-only micro-adjust so it lines up exactly how you want
+        if (images && isLg) tl.to(images, { x: 50, autoAlpha: 1, duration: 1.0 }, 0.05);
+        tl.to(textWrap, { x: textTargetX, duration: 1.05 }, 0.0);
         tl.to(tag, { x: tagOffsetX, duration: 0.9 }, "<0.2");
 
         return () => tl.kill();
@@ -217,7 +379,7 @@ export default function Home() {
       <section className="relative w-full overflow-visible">
         {/* Outer keeps hero vertically centered */}
         <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
-          {/* Text block starts centered; slides left on lg+ */}
+          {/* Text block (center → left) */}
           <div ref={textWrapRef} className="text-center lg:text-left w-fit mx-auto lg:mx-0">
             <div ref={titleRef} className="block">
               <ScrollFloat
@@ -248,53 +410,25 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Images on right (absolute so text starts perfectly centered) */}
+          {/* Right: two-slot carousel (original sizing) */}
           <div
             ref={heroImagesRef}
             className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
             aria-hidden="true"
           >
-            <div className="grid grid-cols-2 gap-5">
-              <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden h-[66svh] min-h-[480px]">
-                <img
-                  src={aboutImages[0]}
-                  alt="fit 1"
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-              <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
-                <img
-                  src={aboutImages[1]}
-                  alt="fit 2"
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-              <div className="col-span-1 rounded-2xl overflow-hidden h-[31svh] min-h-[220px]">
-                <img
-                  src={aboutImages[2]}
-                  alt="fit 3"
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-            </div>
+            <GlideTwoSlotCarousel images={aboutImages} cycleMs={3400} glideMs={1050} />
           </div>
         </div>
 
         {/* SCROLL CUE */}
         <a
           href="#about"
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
           aria-label="Scroll to about section"
         >
-          <span className="text-xs tracking-wider">scroll</span>
+          <span className="text-sm md:text-base tracking-wider font-semibold">scroll</span>
           <svg
-            className="w-5 h-5 mt-1 animate-bounce"
+            className="w-7 h-7 md:w-9 md:h-9 mt-2 animate-bounce"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -377,7 +511,7 @@ export default function Home() {
             search by tag, caption, or @user — with no filters you’ll see everything.
           </ScrollFloat>
 
-          {/* search + quick tags */}
+          {/* search */}
           <div className="mx-auto mt-4 max-w-xl">
             <input
               value={query}
@@ -386,37 +520,6 @@ export default function Home() {
               aria-label="Search fitography"
               className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
             />
-            {allTags.length > 0 && (
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
-                {allTags.slice(0, 12).map((t) => {
-                  const active = selectedTags.includes(t);
-                  return (
-                    <button
-                      type="button"
-                      key={t}
-                      onClick={() => toggleTag(t)}
-                      className={`px-3 py-1 rounded-full text-sm border transition ${
-                        active
-                          ? "bg-charcoal text-creme border-charcoal"
-                          : "bg-white text-charcoal border-charcoal/15 hover:border-charcoal/30"
-                      }`}
-                      aria-pressed={active}
-                    >
-                      #{t}
-                    </button>
-                  );
-                })}
-                {(selectedTags.length > 0 || query) && (
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="px-3 py-1 rounded-full text-sm border border-charcoal/15 bg-white text-charcoal hover:border-charcoal/30"
-                  >
-                    clear
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         </header>
 
