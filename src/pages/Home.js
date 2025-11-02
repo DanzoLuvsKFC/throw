@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
-/* Simple float/fade-in reveal (no character split, keeps spacing perfect) */
+/* Simple float/fade-in reveal */
 function FloatIn({
   as = "div",
   children,
@@ -109,12 +109,14 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const textWrapRef = useRef(null);     // wrapper that slides left
+  // HERO refs
+  const textWrapRef = useRef(null); // wrapper that slides left
   const titleRef = useRef(null);
-  const tagRef = useRef(null);
-  const heroImagesRef = useRef(null);   // right-side images (absolute on lg+)
+  const tagRef = useRef(null);      // tagline moves independently
+  const heroImagesRef = useRef(null);
 
-  /* HERO animation: text starts centered, slides left; images slide in from right (lg+) */
+  /* HERO animation: title starts centered, slides left; images slide in from right (lg+).
+     Tagline can be nudged independently via tagOffsetX. */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
@@ -125,31 +127,33 @@ export default function Home() {
     const mm = gsap.matchMedia();
 
     mm.add(
-      {
-        base: "(min-width: 0px)",
-        lg: "(min-width: 1024px)",
-      },
+      { base: "(min-width: 0px)", lg: "(min-width: 1024px)" },
       (ctx) => {
         const isLg = ctx.conditions.lg;
 
-        // Reset
+        // Reset any prior inline styles
         gsap.set([textWrap, title, tag], { clearProps: "all" });
         if (images) gsap.set(images, { clearProps: "all" });
 
-        // Start: text centered in viewport; images off-canvas to the right (on lg+)
+        // Start positions
         gsap.set(textWrap, { x: 0, autoAlpha: 1 });
+        gsap.set(tag, { x: 0 });
         if (images && isLg) gsap.set(images, { x: 240, autoAlpha: 0 });
 
-        // Target: gently nudge left on lg+ (keep centered on small screens)
-        const textTargetX = isLg ? -350 : 0;
-        const titleDur = 1.1;
-        const tagDur = 1.0;
+        // Targets (edit these to taste)
+        const textTargetX = isLg ? -350 : 0; // whole block (title + tagline)
+        const tagOffsetX  = isLg ? 24 : 0;   // tagline-only offset (right is positive)
 
         const tl = gsap.timeline({ delay: 0.6, defaults: { ease: "power3.inOut" } });
-        // Images push in slightly before text lands
+
+        // 1) images in a touch early
         if (images && isLg) tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
-        tl.to(textWrap, { x: textTargetX, duration: titleDur }, 0.0)
-          .to(tag, { x: isLg ? -20 : 0, duration: tagDur }, 0.15);
+
+        // 2) move whole text block from center to left
+        tl.to(textWrap, { x: textTargetX, duration: 1.1 }, 0.0);
+
+        // 3) tagline-only micro-adjust so it lines up exactly how you want
+        tl.to(tag, { x: tagOffsetX, duration: 0.9 }, "<0.2");
 
         return () => tl.kill();
       }
@@ -213,9 +217,9 @@ export default function Home() {
       <section className="relative w-full overflow-visible">
         {/* Outer keeps hero vertically centered */}
         <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
-          {/* Text block starts centered; we slide this wrapper left on lg+ */}
-          <div ref={textWrapRef} className="text-center lg:text-left">
-            <div ref={titleRef}>
+          {/* Text block starts centered; slides left on lg+ */}
+          <div ref={textWrapRef} className="text-center lg:text-left w-fit mx-auto lg:mx-0">
+            <div ref={titleRef} className="block">
               <ScrollFloat
                 as="h1"
                 playOnMount
@@ -228,7 +232,7 @@ export default function Home() {
               </ScrollFloat>
             </div>
 
-            <div ref={tagRef} className="mt-3">
+            <div ref={tagRef} className="block mt-4 lg:mt-3">
               <ScrollFloat
                 as="p"
                 playOnMount
@@ -244,7 +248,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Images live absolutely on the right so text can start centered cleanly */}
+          {/* Images on right (absolute so text starts perfectly centered) */}
           <div
             ref={heroImagesRef}
             className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
@@ -416,7 +420,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Masonry (Explore) — shows only matches if search/tags set, else all */}
+        {/* Masonry (Explore) */}
         {filtered.length === 0 ? (
           <div className="p-8 text-center text-charcoal/60">
             {posts.length === 0
