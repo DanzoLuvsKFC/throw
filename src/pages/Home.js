@@ -138,16 +138,16 @@ export default function Home() {
         // Start positions
         gsap.set(textWrap, { x: 0, autoAlpha: 1 });
         gsap.set(tag, { x: 0 });
-        if (images && isLg) gsap.set(images, { x: 240, autoAlpha: 0 });
+        if (images && isLg) gsap.set(images, { x: 320, autoAlpha: 0 });
 
         // Targets (edit these to taste)
-        const textTargetX = isLg ? -350 : 0; // whole block (title + tagline)
+        const textTargetX = isLg ? -320 : 0; // whole block (title + tagline)
         const tagOffsetX  = isLg ? 24 : 0;   // tagline-only offset (right is positive)
 
         const tl = gsap.timeline({ delay: 0.6, defaults: { ease: "power3.inOut" } });
 
         // 1) images in a touch early
-        if (images && isLg) tl.to(images, { x: 0, autoAlpha: 1, duration: 1.1 }, 0.05);
+        if (images && isLg) tl.to(images, { x: 70, autoAlpha: 1, duration: 1.1 }, 0.05);
 
         // 2) move whole text block from center to left
         tl.to(textWrap, { x: textTargetX, duration: 1.1 }, 0.0);
