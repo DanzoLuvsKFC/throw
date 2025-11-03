@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.7e1d33a3.css",
-    "main.js": "/throw/static/js/main.b18d8089.js",
+    "main.css": "/throw/static/css/main.3ddb3ceb.css",
+    "main.js": "/throw/static/js/main.4a430400.js",
     "static/media/fit 6.jpg": "/throw/static/media/fit 6.0239ea23c9c14459aeb6.jpg",
     "static/media/fit 11.jpg": "/throw/static/media/fit 11.743001b1b12d39ce0acc.jpg",
     "static/media/fit 7.jpg": "/throw/static/media/fit 7.fe17125d83cff9520171.jpg",
@@ -21,11 +21,11 @@
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.7e1d33a3.css.map": "/throw/static/css/main.7e1d33a3.css.map",
-    "main.b18d8089.js.map": "/throw/static/js/main.b18d8089.js.map"
+    "main.3ddb3ceb.css.map": "/throw/static/css/main.3ddb3ceb.css.map",
+    "main.4a430400.js.map": "/throw/static/js/main.4a430400.js.map"
   },
   "entrypoints": [
-    "static/css/main.7e1d33a3.css",
-    "static/js/main.b18d8089.js"
+    "static/css/main.3ddb3ceb.css",
+    "static/js/main.4a430400.js"
   ]
 }
