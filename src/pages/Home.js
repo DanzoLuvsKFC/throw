@@ -244,6 +244,57 @@ function GlideTwoSlotCarousel({
   );
 }
 
+/* ---------------- How It Works visuals (inline SVGs) ---------------- */
+const UploadIcon = (props) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const TagIcon = (props) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+    <path d="M7 7h5l7 7-5 5-7-7V7z" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+  </svg>
+);
+
+const DiscoverIcon = (props) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" fill="none"/>
+    <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+  </svg>
+);
+
+function StepCard({ Icon, title, children, index }) {
+  return (
+    <FloatIn
+      as="div"
+      y={26}
+      duration={0.9}
+      className="rounded-2xl border border-charcoal/10 bg-white p-5 md:p-6"
+    >
+      <div className="flex items-start gap-4">
+        <div className="relative">
+          <div className="w-11 h-11 rounded-xl bg-creme border border-charcoal/10 flex items-center justify-center text-charcoal">
+            <Icon className="w-6 h-6" />
+          </div>
+          <span className="absolute -top-2 -right-2 text-xs font-semibold text-charcoal/60">
+            {index}
+          </span>
+        </div>
+        <div>
+          <h3 className="font-clash text-lg md:text-xl text-charcoal font-semibold">
+            {title}
+          </h3>
+          <p className="mt-1.5 text-charcoal/70 text-[0.95rem] md:text-[1.05rem] leading-relaxed">
+            {children}
+          </p>
+        </div>
+      </div>
+    </FloatIn>
+  );
+}
+
 /* ------------------ HOME ------------------ */
 export default function Home() {
   const { posts } = useFeed();
@@ -255,6 +306,11 @@ export default function Home() {
   const titleRef = useRef(null);
   const tagRef = useRef(null);
   const heroImagesRef = useRef(null);
+
+  // HOW-IT-WORKS refs (two-segment scroll)
+  const howRef = useRef(null);
+  const howTitleRef = useRef(null);
+  const howCardsRef = useRef(null);
 
   /* Text starts centered → slides left; images slide in from right (xl+) */
   useLayoutEffect(() => {
@@ -292,6 +348,70 @@ export default function Home() {
     );
 
     return () => mm.kill();
+  }, []);
+
+  /* "How it works" two-part scroll choreography with pin
+     Tighter spacing: smaller stage, smaller mt on cards, and larger upward travel for cards.
+  */
+  useLayoutEffect(() => {
+    const sec = howRef.current;
+    const t = howTitleRef.current;
+    const cards = howCardsRef.current;
+    if (!sec || !t || !cards) return;
+
+    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      gsap.set(t, { y: 24, opacity: 0 });
+      gsap.set(cards, { y: 120, opacity: 0 });
+
+      let titleUp = -100; // default lift
+      let cardsUp = -70;  // bring cards close to title by default
+
+      mm.add(
+        {
+          md: "(min-width: 768px)",
+          lg: "(min-width: 1024px)",
+        },
+        (mq) => {
+          if (mq.conditions.lg) {
+            titleUp = -120;
+            cardsUp = -110; // closest on large screens
+          } else if (mq.conditions.md) {
+            titleUp = -105;
+            cardsUp = -90;
+          } else {
+            titleUp = -95;
+            cardsUp = -70;
+          }
+        }
+      );
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sec,
+          start: "top top",
+          end: "+=120%",
+          scrub: true,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+        },
+        defaults: { ease: "power3.out" },
+      });
+
+      // Segment A — fade-up into center
+      tl.to(t, { opacity: 1, y: 0, duration: 0.35 });
+      tl.to({}, { duration: 0.12 });
+
+      // Segment B — lift title; cards rise close underneath
+      tl.to(t, { y: titleUp, duration: 0.35 }, "segB");
+      tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
+    }, howRef);
+
+    return () => {
+      mm.kill();
+      ctx.revert();
+    };
   }, []);
 
   /* Fitography filtering logic */
@@ -347,9 +467,7 @@ export default function Home() {
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
       <section className="relative w-full overflow-visible">
-        {/* Outer keeps hero vertically centered */}
         <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
-          {/* Text block (center → left) */}
           <div ref={textWrapRef} className="text-center xl:text-left w-fit mx-auto xl:mx-0">
             <div ref={titleRef} className="block">
               <ScrollFloat
@@ -379,7 +497,6 @@ export default function Home() {
               </ScrollFloat>
             </div>
 
-            {/* Description — smaller on mobile, scales up smoothly */}
             <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
               <FloatIn
                 as="p"
@@ -394,7 +511,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: two-slot carousel (show only on xl+) */}
           <div
             ref={heroImagesRef}
             className="hidden xl:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
@@ -404,7 +520,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* SCROLL CUE */}
         <a
           href="#about"
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
@@ -422,57 +537,42 @@ export default function Home() {
         </a>
       </section>
 
-      {/* ---------------- ABOUT ---------------- */}
-      <section id="about" className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
-        <div className="grid xl:grid-cols-12 gap-8 items-center">
-          {/* LEFT: images */}
-          <div className="xl:col-span-7">
-            <div className="grid grid-cols-3 gap-3">
-              {aboutImages.map((src, i) => (
-                <FloatIn key={i} className="rounded-2xl overflow-hidden" y={36}>
-                  <img
-                    src={src}
-                    alt={`Outfit ${i + 1}`}
-                    className="w-full h-[220px] md:h-[320px] lg:h-[360px] object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </FloatIn>
-              ))}
-            </div>
-          </div>
+      {/* ---------------- HOW IT WORKS (two-segment, pinned) ---------------- */}
+      <section
+        id="about"
+        ref={howRef}
+        className="relative isolate z-10 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0 overflow-visible"
+      >
+        {/* Smaller stage so cards stay close after the lift */}
+        <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
+          <h2
+            ref={howTitleRef}
+            className="font-clash text-center text-charcoal font-bold leading-[0.95]
+                       text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
+          >
+            how does it work?
+          </h2>
+        </div>
 
-          {/* RIGHT: copy */}
-          <div className="xl:col-span-5">
-            <ScrollFloat
-              as="h2"
-              animationDuration={1.1}
-              ease="back.out(1.4)"
-              scrollStart="top 90%"
-              scrollEnd="top 45%"
-              stagger={0.022}
-              containerClassName="m-0"
-              textClassName="font-clash text-2xl md:text-3xl lg:text-4xl font-bold text-charcoal"
-            >
-              find the fit
-            </ScrollFloat>
-
-            <FloatIn
-              as="p"
-              className="mt-4 m-0 text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
-              y={20}
-              duration={0.9}
-            >
-              Throw a Fit is a community-driven space to share thrifted outfits, tag the pieces,
-              and discover new styles. Think of it like your curated, fashion-forward moodboard,
-              powered by real people and real finds.
-            </FloatIn>
-          </div>
+        {/* Cards start nearer to the title */}
+        <div
+          ref={howCardsRef}
+          className="relative z-10 max-w-6xl mx-auto mt-4 md:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3"
+        >
+          <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
+            Snap your look, add a caption, and share it with the community.
+          </StepCard>
+          <StepCard Icon={TagIcon} title="Tag the pieces" index="02">
+            Add brands, categories, or details so others can find similar items.
+          </StepCard>
+          <StepCard Icon={DiscoverIcon} title="Discover styles" index="03">
+            Search by tags or captions and build your personal moodboard.
+          </StepCard>
         </div>
       </section>
 
       {/* ---------------- FITOGRAPHY ---------------- */}
-      <section id="collections" className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
+      <section id="collections" className="relative z-0 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
           <ScrollFloat
             as="h2"
@@ -500,7 +600,6 @@ export default function Home() {
             search by tag, caption, or @user — with no filters you’ll see everything.
           </ScrollFloat>
 
-          {/* search */}
           <div className="mx-auto mt-4 max-w-xl">
             <input
               value={query}
@@ -512,7 +611,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Masonry (Explore) */}
         {filtered.length === 0 ? (
           <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
             {posts.length === 0
