@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
-/* ---------- Simple float/fade-in on scroll (now can also play on mount) ---------- */
+/* ---------- Simple float/fade-in on scroll (can also play on mount) ---------- */
 function FloatIn({
   as = "div",
   children,
@@ -63,7 +63,7 @@ function FloatIn({
   );
 }
 
-/* ---------- Card ---------- */
+/* ---------- Card (feed) ---------- */
 function FitCard({ post }) {
   return (
     <FloatIn
@@ -112,8 +112,6 @@ function FitCard({ post }) {
 /* =========================================================
    GLIDE TWO-SLOT HERO CAROUSEL
    ========================================================= */
-
-// smooth-load into an existing <img> without popping
 function loadInto(imgEl, src) {
   return new Promise((resolve) => {
     gsap.set(imgEl, { opacity: 0, filter: "blur(2px)" });
@@ -312,7 +310,7 @@ export default function Home() {
   const howTitleRef = useRef(null);
   const howCardsRef = useRef(null);
 
-  /* Text starts centered → slides left; images slide in from right (xl+) */
+  /* Hero intro motion (images only on xl+) */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
@@ -350,9 +348,7 @@ export default function Home() {
     return () => mm.kill();
   }, []);
 
-  /* "How it works" two-part scroll choreography with pin
-     Tighter spacing: smaller stage, smaller mt on cards, and larger upward travel for cards.
-  */
+  /* "How it works" – two-part scroll with overlap (pinned) */
   useLayoutEffect(() => {
     const sec = howRef.current;
     const t = howTitleRef.current;
@@ -364,8 +360,8 @@ export default function Home() {
       gsap.set(t, { y: 24, opacity: 0 });
       gsap.set(cards, { y: 120, opacity: 0 });
 
-      let titleUp = -100; // default lift
-      let cardsUp = -70;  // bring cards close to title by default
+      let titleUp = -100; // how far title moves up
+      let cardsUp = -130; // how far cards rise (more negative = higher / closer)
 
       mm.add(
         {
@@ -374,14 +370,14 @@ export default function Home() {
         },
         (mq) => {
           if (mq.conditions.lg) {
-            titleUp = -120;
-            cardsUp = -110; // closest on large screens
+            titleUp = -130;
+            cardsUp = -160; // slight overlap on desktop
           } else if (mq.conditions.md) {
-            titleUp = -105;
-            cardsUp = -90;
+            titleUp = -115;
+            cardsUp = -140;
           } else {
-            titleUp = -95;
-            cardsUp = -70;
+            titleUp = -100;
+            cardsUp = -120;
           }
         }
       );
@@ -399,11 +395,11 @@ export default function Home() {
         defaults: { ease: "power3.out" },
       });
 
-      // Segment A — fade-up into center
+      // Segment A — title fade-up into center
       tl.to(t, { opacity: 1, y: 0, duration: 0.35 });
       tl.to({}, { duration: 0.12 });
 
-      // Segment B — lift title; cards rise close underneath
+      // Segment B — lift title; cards rise and slightly cover it
       tl.to(t, { y: titleUp, duration: 0.35 }, "segB");
       tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
     }, howRef);
@@ -543,7 +539,7 @@ export default function Home() {
         ref={howRef}
         className="relative isolate z-10 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0 overflow-visible"
       >
-        {/* Smaller stage so cards stay close after the lift */}
+        {/* Stage (title appears centered first) */}
         <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
           <h2
             ref={howTitleRef}
@@ -554,10 +550,10 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* Cards start nearer to the title */}
+        {/* Cards start very close to the title; overlap happens during scroll */}
         <div
           ref={howCardsRef}
-          className="relative z-10 max-w-6xl mx-auto mt-4 md:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3"
+          className="relative z-10 max-w-6xl mx-auto -mt-15 md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
         >
           <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
             Snap your look, add a caption, and share it with the community.
