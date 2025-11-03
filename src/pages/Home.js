@@ -12,6 +12,36 @@ gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
+/* ---------- Reusable title animation (same feel as hero) ---------- */
+function TitleFloat({
+  as = "h2",
+  children,
+  textClassName = "",
+  containerClassName = "m-0",
+  playOnMount = false,          // hero passes true; others scroll in
+  animationDuration = 1,
+  ease = "power3.out",
+  stagger = 0.02,
+  scrollStart = "top 92%",
+  scrollEnd = "top 50%",
+}) {
+  return (
+    <ScrollFloat
+      as={as}
+      playOnMount={playOnMount}
+      animationDuration={animationDuration}
+      ease={ease}
+      stagger={stagger}
+      containerClassName={containerClassName}
+      textClassName={textClassName}
+      scrollStart={scrollStart}
+      scrollEnd={scrollEnd}
+    >
+      {children}
+    </ScrollFloat>
+  );
+}
+
 /* ---------- Simple float/fade-in on scroll (can also play on mount) ---------- */
 function FloatIn({
   as = "div",
@@ -351,17 +381,19 @@ export default function Home() {
   /* "How it works" – two-part scroll with overlap (pinned) */
   useLayoutEffect(() => {
     const sec = howRef.current;
-    const t = howTitleRef.current;
+    const tWrap = howTitleRef.current;
     const cards = howCardsRef.current;
-    if (!sec || !t || !cards) return;
+    if (!sec || !tWrap || !cards) return;
 
     const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      gsap.set(t, { y: 24, opacity: 0 });
+      // Keep wrapper visible; let TitleFloat handle the text reveal
+      gsap.set(tWrap, { y: 24, opacity: 1 });
+
       gsap.set(cards, { y: 120, opacity: 0 });
 
-      let titleUp = -100; // how far title moves up
-      let cardsUp = -130; // how far cards rise (more negative = higher / closer)
+      let titleUp = -100; // how far title wrapper moves up
+      let cardsUp = -130; // how far cards rise
 
       mm.add(
         {
@@ -371,7 +403,7 @@ export default function Home() {
         (mq) => {
           if (mq.conditions.lg) {
             titleUp = -130;
-            cardsUp = -160; // slight overlap on desktop
+            cardsUp = -160;
           } else if (mq.conditions.md) {
             titleUp = -115;
             cardsUp = -140;
@@ -395,12 +427,12 @@ export default function Home() {
         defaults: { ease: "power3.out" },
       });
 
-      // Segment A — title fade-up into center
-      tl.to(t, { opacity: 1, y: 0, duration: 0.35 });
+      // Segment A — wrapper slides into place; inner text reveals via ScrollFloat
+      tl.to(tWrap, { y: 0, duration: 0.35 });
       tl.to({}, { duration: 0.12 });
 
-      // Segment B — lift title; cards rise and slightly cover it
-      tl.to(t, { y: titleUp, duration: 0.35 }, "segB");
+      // Segment B — lift wrapper; cards rise and slightly cover it
+      tl.to(tWrap, { y: titleUp, duration: 0.35 }, "segB");
       tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
     }, howRef);
 
@@ -466,16 +498,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
           <div ref={textWrapRef} className="text-center xl:text-left w-fit mx-auto xl:mx-0">
             <div ref={titleRef} className="block">
-              <ScrollFloat
+              <TitleFloat
                 as="h1"
                 playOnMount
                 animationDuration={1}
                 ease="power3.out"
-                containerClassName="m-0"
+                stagger={0.02}
                 textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
               >
                 throw a fit
-              </ScrollFloat>
+              </TitleFloat>
             </div>
 
             <div ref={tagRef} className="block -mt-2 xl:-mt-4">
@@ -541,13 +573,22 @@ export default function Home() {
       >
         {/* Stage (title appears centered first) */}
         <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
-          <h2
-            ref={howTitleRef}
-            className="font-clash text-center text-charcoal font-bold leading-[0.95]
-                       text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
-          >
-            how does it work?
-          </h2>
+          {/* Wrapper slides; inner h2 reveals on scroll (same animation as hero) */}
+          <div ref={howTitleRef}>
+            <TitleFloat
+              as="h2"
+              playOnMount={false}
+              animationDuration={1}
+              ease="power3.out"
+              stagger={0.02}
+              scrollStart="top 92%"
+              scrollEnd="top 50%"
+              textClassName="font-clash text-center text-charcoal font-bold leading-[0.95]
+                             text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
+            >
+              how does it work?
+            </TitleFloat>
+          </div>
         </div>
 
         {/* Cards start very close to the title; overlap happens during scroll */}
@@ -570,18 +611,17 @@ export default function Home() {
       {/* ---------------- FITOGRAPHY ---------------- */}
       <section id="collections" className="relative z-0 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
-          <ScrollFloat
+          <TitleFloat
             as="h2"
+            playOnMount={false}
             animationDuration={1.05}
             ease="power3.out"
-            scrollStart="top 92%"
-            scrollEnd="top 50%"
             stagger={0.02}
             containerClassName="m-0"
             textClassName="font-clash text-2xl md:text-3xl font-bold text-charcoal"
           >
             fitography
-          </ScrollFloat>
+          </TitleFloat>
 
           <ScrollFloat
             as="p"
