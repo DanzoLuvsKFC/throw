@@ -14,7 +14,7 @@ function preloadImage(url) {
 export default function BootGate({
   children,
   preloadImages = [],  // e.g. ['https://.../hero.jpg']
-  minimumShowMs = 900, // minimum time to show loader
+  minimumShowMs = 1400, // minimum time to show loader
   maskFadeMs = 420,    // fade-out of the mask
   contentFadeMs = 600, // fade-in of logo/subtitle
 }) {
