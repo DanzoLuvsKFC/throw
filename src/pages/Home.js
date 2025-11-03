@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
-/* ---------- Simple float/fade-in on scroll ---------- */
+/* ---------- Simple float/fade-in on scroll (now can also play on mount) ---------- */
 function FloatIn({
   as = "div",
   children,
@@ -22,6 +22,7 @@ function FloatIn({
   y = 28,
   ease = "power3.out",
   start = "top 85%",
+  playOnMount = false,
 }) {
   const Tag = as;
   const ref = useRef(null);
@@ -32,23 +33,28 @@ function FloatIn({
 
     const ctx = gsap.context(() => {
       gsap.set(el, { opacity: 0, y });
-      gsap.to(el, {
-        opacity: 1,
-        y: 0,
-        duration,
-        delay,
-        ease,
-        scrollTrigger: {
-          trigger: el,
-          start,
-          end: "top 60%",
-          toggleActions: "play none none none",
-        },
-      });
+
+      if (playOnMount) {
+        gsap.to(el, { opacity: 1, y: 0, duration, delay, ease });
+      } else {
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration,
+          delay,
+          ease,
+          scrollTrigger: {
+            trigger: el,
+            start,
+            end: "top 60%",
+            toggleActions: "play none none none",
+          },
+        });
+      }
     }, ref);
 
     return () => ctx.revert();
-  }, [duration, delay, y, ease, start]);
+  }, [duration, delay, y, ease, start, playOnMount]);
 
   return (
     <Tag ref={ref} className={className}>
@@ -104,27 +110,16 @@ function FitCard({ post }) {
 }
 
 /* =========================================================
-   GLIDE TWO-SLOT HERO CAROUSEL (smoother + fade-in next image)
-   - Right image glides in; left image slides out with blur/fade, then fades fully.
-   - New “next” image on the right is decoded first, then fades/deblurs in (no pop).
-   - Keeps your exact sizes (h-[66svh], min-h-[480px], rounded-2xl, gap-5).
+   GLIDE TWO-SLOT HERO CAROUSEL
    ========================================================= */
 
 // smooth-load into an existing <img> without popping
 function loadInto(imgEl, src) {
   return new Promise((resolve) => {
-    // start hidden & slightly blurred; we’ll animate this out later
     gsap.set(imgEl, { opacity: 0, filter: "blur(2px)" });
-
-    // swap the source
     imgEl.src = src;
-
-    // wait until pixels are decoded (where supported)
     if (imgEl.decode) {
-      imgEl
-        .decode()
-        .then(resolve)
-        .catch(resolve);
+      imgEl.decode().then(resolve).catch(resolve);
     } else {
       imgEl.onload = () => resolve();
       imgEl.onerror = () => resolve();
@@ -134,9 +129,9 @@ function loadInto(imgEl, src) {
 
 function GlideTwoSlotCarousel({
   images,
-  gapPx = 20,    // keep in sync with gap-5
-  cycleMs = 3400, // delay between cycles
-  glideMs = 1050, // glide duration
+  gapPx = 20,
+  cycleMs = 3400,
+  glideMs = 1050,
 }) {
   const wrapRef = useRef(null);
   const leftRef = useRef(null);
@@ -148,7 +143,6 @@ function GlideTwoSlotCarousel({
   const idxLeftRef = useRef(0);
   const idxRightRef = useRef(1);
 
-  // Preload
   useEffect(() => {
     images.forEach((src) => {
       const im = new Image();
@@ -190,35 +184,17 @@ function GlideTwoSlotCarousel({
           defaults: { ease: "power3.inOut", duration: glideMs / 1000 },
         });
 
-        // Prep incoming (right) panel slightly subtle
         gsap.set(right, { scale: 0.99, opacity: 0.92 });
-
-        // Right panel glides into left position
         tl.to(right, { x: -(w + gapPx), scale: 1, opacity: 1 }, 0);
-
-        // Left panel slides out to right with soft depth cues
-        tl.to(
-          left,
-          { x: w + gapPx, opacity: 0.82, scale: 0.985, filter: "blur(1px)" },
-          0
-        );
-
-        // Final quick fade on the outgoing left so the swap is invisible
-        tl.to(
-          left,
-          { opacity: 0, duration: 0.2, ease: "power2.out" },
-          `>${-0.12}`
-        );
+        tl.to(left, { x: w + gapPx, opacity: 0.82, scale: 0.985, filter: "blur(1px)" }, 0);
+        tl.to(left, { opacity: 0, duration: 0.2, ease: "power2.out" }, `>${-0.12}`);
 
         tl.add(async () => {
-          // Advance indices (new left is what used to be right)
           idxLeftRef.current = idxRightRef.current;
           idxRightRef.current = (idxRightRef.current + 1) % images.length;
 
-          // While left is invisible, update its src immediately
           imgLeftRef.current.src = images[idxLeftRef.current];
 
-          // Reset panel transforms for next cycle
           gsap.set([left, right], {
             x: 0,
             scale: 1,
@@ -226,10 +202,8 @@ function GlideTwoSlotCarousel({
             clearProps: "filter",
           });
 
-          // Smoothly load NEXT right image, then fade/deblur it in (no pop)
           const nextSrc = images[idxRightRef.current];
           await loadInto(imgRightRef.current, nextSrc);
-
           gsap.to(imgRightRef.current, {
             opacity: 1,
             filter: "blur(0px)",
@@ -243,7 +217,6 @@ function GlideTwoSlotCarousel({
         });
       };
 
-      // Start slightly later to sync with hero text
       timerRef.current = gsap.delayedCall((cycleMs - 600) / 1000, doCycle);
 
       const onResize = () =>
@@ -261,12 +234,9 @@ function GlideTwoSlotCarousel({
 
   return (
     <div ref={wrapRef} className="grid grid-cols-2 gap-5">
-      {/* LEFT slot — original sizing */}
       <div ref={leftRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
         <img ref={imgLeftRef} alt="carousel left" />
       </div>
-
-      {/* RIGHT slot — original sizing */}
       <div ref={rightRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
         <img ref={imgRightRef} alt="carousel right" />
       </div>
@@ -286,7 +256,7 @@ export default function Home() {
   const tagRef = useRef(null);
   const heroImagesRef = useRef(null);
 
-  /* Text starts centered → slides left; images slide in from right (lg+) */
+  /* Text starts centered → slides left; images slide in from right (xl+) */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
@@ -297,23 +267,23 @@ export default function Home() {
     const mm = gsap.matchMedia();
 
     mm.add(
-      { base: "(min-width: 0px)", lg: "(min-width: 1024px)" },
+      { base: "(min-width: 0px)", xl: "(min-width: 1280px)" },
       (ctx) => {
-        const isLg = ctx.conditions.lg;
+        const isXl = ctx.conditions.xl;
 
         gsap.set([textWrap, title, tag], { clearProps: "all" });
         if (images) gsap.set(images, { clearProps: "all" });
 
         gsap.set(textWrap, { x: 0, autoAlpha: 1 });
         gsap.set(tag, { x: 0 });
-        if (images && isLg) gsap.set(images, { x: 280, autoAlpha: 0 });
+        if (images && isXl) gsap.set(images, { x: 280, autoAlpha: 0 });
 
-        const textTargetX = isLg ? -320 : 0;
-        const tagOffsetX = isLg ? 20 : 0;
+        const textTargetX = isXl ? -320 : 0;
+        const tagOffsetX = isXl ? 20 : 0;
 
         const tl = gsap.timeline({ delay: 0.55, defaults: { ease: "power3.inOut" } });
 
-        if (images && isLg) tl.to(images, { x: 50, autoAlpha: 1, duration: 1.0 }, 0.05);
+        if (images && isXl) tl.to(images, { x: 50, autoAlpha: 1, duration: 1.0 }, 0.05);
         tl.to(textWrap, { x: textTargetX, duration: 1.05 }, 0.0);
         tl.to(tag, { x: tagOffsetX, duration: 0.9 }, "<0.2");
 
@@ -380,7 +350,7 @@ export default function Home() {
         {/* Outer keeps hero vertically centered */}
         <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
           {/* Text block (center → left) */}
-          <div ref={textWrapRef} className="text-center lg:text-left w-fit mx-auto lg:mx-0">
+          <div ref={textWrapRef} className="text-center xl:text-left w-fit mx-auto xl:mx-0">
             <div ref={titleRef} className="block">
               <ScrollFloat
                 as="h1"
@@ -388,13 +358,13 @@ export default function Home() {
                 animationDuration={1}
                 ease="power3.out"
                 containerClassName="m-0"
-                textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.5rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7rem] leading-none"
+                textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
               >
                 throw a fit
               </ScrollFloat>
             </div>
 
-            <div ref={tagRef} className="block mt-4 lg:mt-3">
+            <div ref={tagRef} className="block -mt-2 xl:-mt-4">
               <ScrollFloat
                 as="p"
                 playOnMount
@@ -403,17 +373,31 @@ export default function Home() {
                 ease="power3.out"
                 stagger={0.01}
                 containerClassName="m-0"
-                textClassName="text-[1rem] sm:text-[1.25rem] md:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] text-charcoal/70"
+                textClassName="text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem] lg:text-[1.55rem] xl:text-[1.75rem] 2xl:text-[2rem] text-charcoal/70"
               >
                 {"don't know what to wear? throw a fit."}
               </ScrollFloat>
             </div>
+
+            {/* Description — smaller on mobile, scales up smoothly */}
+            <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
+              <FloatIn
+                as="p"
+                y={16}
+                duration={0.9}
+                playOnMount
+                className="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
+              >
+                A community moodboard for sustainable style — share full outfits, tag every piece,
+                and discover real fits from real people.
+              </FloatIn>
+            </div>
           </div>
 
-          {/* Right: two-slot carousel (original sizing) */}
+          {/* Right: two-slot carousel (show only on xl+) */}
           <div
             ref={heroImagesRef}
-            className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
+            className="hidden xl:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
             aria-hidden="true"
           >
             <GlideTwoSlotCarousel images={aboutImages} cycleMs={3400} glideMs={1050} />
@@ -440,9 +424,9 @@ export default function Home() {
 
       {/* ---------------- ABOUT ---------------- */}
       <section id="about" className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
-        <div className="grid lg:grid-cols-12 gap-8 items-center">
+        <div className="grid xl:grid-cols-12 gap-8 items-center">
           {/* LEFT: images */}
-          <div className="lg:col-span-7">
+          <div className="xl:col-span-7">
             <div className="grid grid-cols-3 gap-3">
               {aboutImages.map((src, i) => (
                 <FloatIn key={i} className="rounded-2xl overflow-hidden" y={36}>
@@ -459,7 +443,7 @@ export default function Home() {
           </div>
 
           {/* RIGHT: copy */}
-          <div className="lg:col-span-5">
+          <div className="xl:col-span-5">
             <ScrollFloat
               as="h2"
               animationDuration={1.1}
@@ -473,7 +457,12 @@ export default function Home() {
               find the fit
             </ScrollFloat>
 
-            <FloatIn as="p" className="mt-4 m-0 text-charcoal/70" y={20} duration={0.9}>
+            <FloatIn
+              as="p"
+              className="mt-4 m-0 text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
+              y={20}
+              duration={0.9}
+            >
               Throw a Fit is a community-driven space to share thrifted outfits, tag the pieces,
               and discover new styles. Think of it like your curated, fashion-forward moodboard,
               powered by real people and real finds.
@@ -506,7 +495,7 @@ export default function Home() {
             scrollEnd="top 60%"
             stagger={0.006}
             containerClassName="mt-2 m-0"
-            textClassName="text-charcoal/70"
+            textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
           >
             search by tag, caption, or @user — with no filters you’ll see everything.
           </ScrollFloat>
@@ -525,7 +514,7 @@ export default function Home() {
 
         {/* Masonry (Explore) */}
         {filtered.length === 0 ? (
-          <div className="p-8 text-center text-charcoal/60">
+          <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
             {posts.length === 0
               ? "no uploads yet — hit “flex a fit” to add your first look."
               : "no matches for your filters. try a different search."}
