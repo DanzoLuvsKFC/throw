@@ -1,5 +1,6 @@
 ﻿// src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
@@ -95,13 +96,32 @@ function FloatIn({
 
 /* ---------- Card (feed) ---------- */
 function FitCard({ post }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <FloatIn
       as="article"
       className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border border-charcoal/10 bg-white group"
       y={36}
     >
-      <div className="relative">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() =>
+          navigate(`/outfit/${encodeURIComponent(post.id)}`, {
+            state: { backgroundLocation: location },
+          })
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            navigate(`/outfit/${encodeURIComponent(post.id)}`, {
+              state: { backgroundLocation: location },
+            });
+          }
+        }}
+        className="relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-charcoal/10"
+      >
         <img
           src={post.src}
           alt={post.caption || "uploaded fit"}

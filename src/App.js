@@ -11,10 +11,11 @@ import NotFound from "./pages/NotFound";
 import Container from "./components/Container";
 import SiteFooter from "./components/SiteFooter";
 import StaggeredMenu from "./components/StaggeredMenu";
-import BootGate from "./components/BootGate";
 import UploadModal from "./components/UploadModal";
 import { FeedProvider } from "./store/FeedContext";
 import Portal from "./components/Portal";
+import BootGate from "./components/BootGate";
+import PostLightbox from "./components/PostLightbox";
 
 // Inline social icons (no external deps)
 const InstagramIcon = (props) => (
@@ -48,6 +49,8 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const postMatch = location.pathname.match(/^\/outfit\/([^/]+)$/);
+  const viewingPostId = postMatch ? decodeURIComponent(postMatch[1]) : null;
 
   const menuItems = useMemo(
     () => [
@@ -112,70 +115,59 @@ function App() {
 
   return (
     <FeedProvider>
-      <div className="min-h-screen bg-creme relative">
-        <main>
-          <Container className="py-4">
-            <Routes location={location}>
-              {/* Render Home for both "/" and "/upload" so the modal overlays it */}
-              <Route
-                path="/"
-                element={
-                  <BootGate preloadImages={[]} minimumShowMs={700}>
-                    <Home />
-                  </BootGate>
-                }
-              />
-              <Route
-                path="/upload"
-                element={
-                  <BootGate preloadImages={[]} minimumShowMs={700}>
-                    <Home />
-                  </BootGate>
-                }
-              />
-
-              <Route path="/outfit/:id" element={<OutfitPost />} />
+      <BootGate>
+        <div className="min-h-screen bg-creme relative">
+          <main>
+            <Container className="py-4">
+              <Routes location={location}>
+                {/* Render Home for both "/" and "/upload" so the modal overlays it */}
+              <Route path="/" element={<Home />} />
+              <Route path="/upload" element={<Home />} />
+              {/* Render Home so the lightbox overlays it */}
+              <Route path="/outfit/:id" element={<Home />} />
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
 
             {location.pathname === "/upload" && <UploadModal />}
+            {viewingPostId && <PostLightbox postId={viewingPostId} />}
           </Container>
         </main>
 
-        <SiteFooter logos={socialLogos} logoHeight={40} gap={36} speed={120} direction="left" />
+          <SiteFooter logos={socialLogos} logoHeight={40} gap={36} speed={120} direction="left" />
 
-        {/* MENU in a Portal so it can never be clipped by Container/max-width */}
-        <Portal>
-          <div
-            className={`fixed inset-0 z-[9999] ${
-              menuOpen ? "pointer-events-auto" : "pointer-events-none"
-            }`}
-          >
+          {/* MENU in a Portal so it can never be clipped by Container/max-width */}
+          <Portal>
             <div
-              className="h-full"
-              onClickCapture={menuOpen ? handleMenuClick : undefined}
+              className={`fixed inset-0 z-[9999] ${
+                menuOpen ? "pointer-events-auto" : "pointer-events-none"
+              }`}
             >
-              <StaggeredMenu
-                position="right"
-                items={menuItems}
-                socialItems={socialItems}
-                displaySocials
-                displayItemNumbering={false}
-                showLogo={false}
-                logoUrl="/logo.svg"
-                colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]}
-                accentColor="#ffffe3"
-                menuButtonColor="#111111"
-                openMenuButtonColor="#ffffe3"
-                changeMenuColorOnOpen={true}
-                onMenuOpen={() => setMenuOpen(true)}
-                onMenuClose={() => setMenuOpen(false)}
-              />
+              <div
+                className="h-full"
+                onClickCapture={menuOpen ? handleMenuClick : undefined}
+              >
+                <StaggeredMenu
+                  position="right"
+                  items={menuItems}
+                  socialItems={socialItems}
+                  displaySocials
+                  displayItemNumbering={false}
+                  showLogo={false}
+                  logoUrl="/logo.svg"
+                  colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]}
+                  accentColor="#ffffe3"
+                  menuButtonColor="#111111"
+                  openMenuButtonColor="#ffffe3"
+                  changeMenuColorOnOpen={true}
+                  onMenuOpen={() => setMenuOpen(true)}
+                  onMenuClose={() => setMenuOpen(false)}
+                />
+              </div>
             </div>
-          </div>
-        </Portal>
-      </div>
+          </Portal>
+        </div>
+      </BootGate>
     </FeedProvider>
   );
 }
