@@ -1,7 +1,9 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.74bae08f.css",
-    "main.js": "/throw/static/js/main.414339d2.js",
+    "main.css": "/throw/static/css/main.082493bc.css",
+    "main.js": "/throw/static/js/main.ec1e2ef0.js",
+    "static/media/fit 16.jpg": "/throw/static/media/fit 16.2888d10d496f461a9ac7.jpg",
+    "static/media/fit 17.jpg": "/throw/static/media/fit 17.26a02cae09f5414d34f1.jpg",
     "static/media/fit 6.jpg": "/throw/static/media/fit 6.0239ea23c9c14459aeb6.jpg",
     "static/media/fit 11.jpg": "/throw/static/media/fit 11.743001b1b12d39ce0acc.jpg",
     "static/media/fit 7.jpg": "/throw/static/media/fit 7.fe17125d83cff9520171.jpg",
@@ -10,22 +12,27 @@
     "static/media/fit 2.jpg": "/throw/static/media/fit 2.e690b5cab1c2db7f1f12.jpg",
     "static/media/fit 4.jpg": "/throw/static/media/fit 4.224a9d0ad6be00606c49.jpg",
     "static/media/fit 3.jpg": "/throw/static/media/fit 3.6878f1d193ae983727ff.jpg",
+    "static/media/fit 22.jpg": "/throw/static/media/fit 22.7805cc1def5f805feb97.jpg",
     "static/media/fit.jpg": "/throw/static/media/fit.45312e949ee1e2e82acc.jpg",
     "static/media/fit 9.jpg": "/throw/static/media/fit 9.e254950d15dc96ab7667.jpg",
     "static/media/fit 15.jpg": "/throw/static/media/fit 15.4d344fef7f8d2a62cea9.jpg",
+    "static/media/fit 21.jpg": "/throw/static/media/fit 21.16eb72eb500273aa0792.jpg",
     "static/media/fit 12.jpg": "/throw/static/media/fit 12.1c045d1db54a3e3e3fee.jpg",
+    "static/media/fit 18.jpg": "/throw/static/media/fit 18.495bda8a1d1048256fe0.jpg",
     "static/media/fit 14.jpg": "/throw/static/media/fit 14.8919ffe88fb3f7574ef2.jpg",
+    "static/media/fit 20.jpg": "/throw/static/media/fit 20.2f02193fe6d8a604b065.jpg",
     "static/media/fit 13.jpg": "/throw/static/media/fit 13.a611e04777f5801c9b80.jpg",
+    "static/media/fit 19.jpg": "/throw/static/media/fit 19.8f89dd9285035a57e51a.jpg",
     "static/media/Satoshi-Bold.otf": "/throw/static/media/Satoshi-Bold.b5dd7deee13e32689234.otf",
     "static/media/Satoshi-Regular.otf": "/throw/static/media/Satoshi-Regular.811ccb0b5af1892a71df.otf",
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.74bae08f.css.map": "/throw/static/css/main.74bae08f.css.map",
-    "main.414339d2.js.map": "/throw/static/js/main.414339d2.js.map"
+    "main.082493bc.css.map": "/throw/static/css/main.082493bc.css.map",
+    "main.ec1e2ef0.js.map": "/throw/static/js/main.ec1e2ef0.js.map"
   },
   "entrypoints": [
-    "static/css/main.74bae08f.css",
-    "static/js/main.414339d2.js"
+    "static/css/main.082493bc.css",
+    "static/js/main.ec1e2ef0.js"
   ]
 }
