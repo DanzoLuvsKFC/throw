@@ -111,7 +111,7 @@ export default function PostLightbox({ postId }) {
           ×
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_380px] bg-white rounded-xl overflow-hidden shadow-2xl">
+        <div className="bg-white rounded-xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
           {/* Media with blurred fill to avoid letterboxing */}
           <div className="relative bg-black flex items-center justify-center overflow-hidden">
             {/* Blurred backfill that covers the container */}
@@ -126,20 +126,25 @@ export default function PostLightbox({ postId }) {
               ref={imgRef}
               src={post.src}
               alt={post.caption || "uploaded fit"}
-              className="relative z-10 max-h-[82vh] max-w-full w-auto h-auto object-contain"
+              className="relative z-10 max-h-[78vh] max-w-full w-auto h-auto object-contain"
               loading="eager"
             />
           </div>
 
-          {/* Right panel with tags/user */}
-          <aside className="p-5 md:p-6 bg-white text-charcoal max-h-[82vh] overflow-auto">
-            <div className="text-sm text-charcoal/60">@{post.user ?? "guest"}</div>
+          {/* Bottom info bar with user + tags */}
+          <aside className="p-4 md:p-5 bg-white text-charcoal border-t border-charcoal/10">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-charcoal/70">
+              <span className="font-medium text-charcoal/80">@{post.user ?? "guest"}</span>
+              {post.createdAt ? (
+                <span className="text-charcoal/50">· {new Date(post.createdAt).toLocaleDateString()}</span>
+              ) : null}
+            </div>
             {post.caption ? (
               <div className="mt-1 text-[0.95rem]">{post.caption}</div>
             ) : null}
 
             {Array.isArray(post.tags) && post.tags.length > 0 ? (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {post.tags.map((t) => (
                   <span
                     key={t}
@@ -150,15 +155,11 @@ export default function PostLightbox({ postId }) {
                 ))}
               </div>
             ) : null}
-
-            {post.createdAt ? (
-              <div className="mt-4 text-xs text-charcoal/50">
-                {new Date(post.createdAt).toLocaleDateString()}
-              </div>
-            ) : null}
           </aside>
         </div>
       </div>
     </div>
   );
 }
+
+

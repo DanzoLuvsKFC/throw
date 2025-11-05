@@ -1,4 +1,4 @@
-﻿// src/pages/Home.js
+// src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ScrollFloat from "../components/ScrollFloat";
@@ -8,6 +8,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import look1 from "../assets/fonts/fits/fit.jpg";
 import look2 from "../assets/fonts/fits/fit 8.jpg";
 import look3 from "../assets/fonts/fits/fit 12.jpg";
+// Fallback to existing asset. If you want to use your new image,
+// place it in src/assets/fonts/fits and update this import to its exact name.
+import heroHanger from "../assets/fonts/fits/Hero Image.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -148,9 +151,14 @@ function FitCard({ post }) {
       </div>
       {(post.caption || post.user) && (
         <div className="p-3">
+          <div className="text-sm text-charcoal/60 hidden">
+            @{post.user ?? "guest"} •{" "}
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+          </div>
           <div className="text-sm text-charcoal/60">
-            @{post.user ?? "guest"} â€¢{" "}
-            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "â€”"}
+            @{post.user ?? "guest"}
+            <span aria-hidden="true" className="px-1.5">&middot;</span>
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
           </div>
           {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
         </div>
@@ -353,52 +361,46 @@ export default function Home() {
   const textWrapRef = useRef(null);
   const titleRef = useRef(null);
   const tagRef = useRef(null);
-  const heroImagesRef = useRef(null);
+  const hangerRef = useRef(null);
 
   // HOW-IT-WORKS refs (two-segment scroll)
   const howRef = useRef(null);
   const howTitleRef = useRef(null);
   const howCardsRef = useRef(null);
 
-  /* Hero intro motion (images only on xl+) */
+  /* Hero intro motion: keep simple fade/appear; remove slide + carousel */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
     const tag = tagRef.current;
-    const images = heroImagesRef.current;
     if (!textWrap || !title || !tag) return;
 
-    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      gsap.set([textWrap, title, tag], { clearProps: "all" });
+      // minimal intro: slight rise + fade for wrapper to complement inner text reveals
+      gsap.fromTo(
+        textWrap,
+        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.35 }
+      );
 
-    mm.add(
-      { base: "(min-width: 0px)", xl: "(min-width: 1280px)" },
-      (ctx) => {
-        const isXl = ctx.conditions.xl;
-
-        gsap.set([textWrap, title, tag], { clearProps: "all" });
-        if (images) gsap.set(images, { clearProps: "all" });
-
-        gsap.set(textWrap, { x: 0, autoAlpha: 1 });
-        gsap.set(tag, { x: 0 });
-        if (images && isXl) gsap.set(images, { x: 280, autoAlpha: 0 });
-
-        const textTargetX = isXl ? -320 : 0;
-        const tagOffsetX = isXl ? 20 : 0;
-
-        const tl = gsap.timeline({ delay: 0.55, defaults: { ease: "power3.inOut" } });
-
-        if (images && isXl) tl.to(images, { x: 50, autoAlpha: 1, duration: 1.0 }, 0.05);
-        tl.to(textWrap, { x: textTargetX, duration: 1.05 }, 0.0);
-        tl.to(tag, { x: tagOffsetX, duration: 0.9 }, "<0.2");
-
-        return () => tl.kill();
+      const hangerEl = hangerRef.current;
+      if (hangerEl) {
+        gsap.set(hangerEl, { y: 260, autoAlpha: 0 });
+        gsap.to(hangerEl, {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.7,
+          ease: "power3.out",
+          delay: 0.6,
+        });
       }
-    );
+    });
 
-    return () => mm.kill();
+    return () => ctx.revert();
   }, []);
 
-  /* "How it works" â€“ two-part scroll with overlap (pinned) */
+  /* "How it works" – two-part scroll with overlap (pinned) */
   useLayoutEffect(() => {
     const sec = howRef.current;
     const tWrap = howTitleRef.current;
@@ -447,11 +449,11 @@ export default function Home() {
         defaults: { ease: "power3.out" },
       });
 
-      // Segment A â€” wrapper slides into place; inner text reveals via ScrollFloat
+      // Segment A — wrapper slides into place; inner text reveals via ScrollFloat
       tl.to(tWrap, { y: 0, duration: 0.35 });
       tl.to({}, { duration: 0.12 });
 
-      // Segment B â€” lift wrapper; cards rise and slightly cover it
+      // Segment B — lift wrapper; cards rise and slightly cover it
       tl.to(tWrap, { y: titleUp, duration: 0.35 }, "segB");
       tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
     }, howRef);
@@ -514,9 +516,9 @@ export default function Home() {
   return (
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
-      <section className="relative w-full overflow-visible">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] flex items-center justify-center">
-          <div ref={textWrapRef} className="text-center xl:text-left w-fit mx-auto xl:mx-0">
+      <section className="relative w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] pb-56 md:pb-64 lg:pb-72 flex items-center justify-center">
+          <div ref={textWrapRef} className="text-center w-fit mx-auto relative z-10">
             <div ref={titleRef} className="block">
               <TitleFloat
                 as="h1"
@@ -559,12 +561,18 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Hanger image: animates up from bottom under the text */}
           <div
-            ref={heroImagesRef}
-            className="hidden xl:block absolute right-6 top-1/2 -translate-y-1/2 w-[48%] max-w-[760px]"
+            ref={hangerRef}
+            className="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-[52svh] sm:-bottom-[56svh] md:-bottom-[60svh] lg:-bottom-[64svh] w-[100vw] max-w-none z-0"
             aria-hidden="true"
           >
-            <GlideTwoSlotCarousel images={aboutImages} cycleMs={3400} glideMs={1050} />
+            <img
+              src={heroHanger}
+              alt=""
+              className="block mx-auto w-[100vw] h-auto select-none drop-shadow-xl origin-bottom scale-[1.10] sm:scale-[1.08] md:scale-[1.06] lg:scale-[1.04]"
+              draggable="false"
+            />
           </div>
         </div>
 
@@ -655,14 +663,14 @@ export default function Home() {
             containerClassName="mt-2 m-0"
             textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
           >
-            search by tag, caption, or @user â€” with no filters youâ€™ll see everything.
+            search by tag, caption, or @user — with no filters you’ll see everything.
           </ScrollFloat>
 
           <div className="mx-auto mt-4 max-w-xl">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="search tags, captions, or @userâ€¦"
+              placeholder="search tags, captions, or @user…"
               aria-label="Search fitography"
               className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
             />
@@ -672,7 +680,7 @@ export default function Home() {
         {filtered.length === 0 ? (
           <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
             {posts.length === 0
-              ? "no uploads yet â€” hit â€œflex a fitâ€ to add your first look."
+              ? "no uploads yet — hit “flex a fit” to add your first look."
               : "no matches for your filters. try a different search."}
           </div>
         ) : (
