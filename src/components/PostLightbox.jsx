@@ -112,13 +112,21 @@ export default function PostLightbox({ postId }) {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_380px] bg-white rounded-xl overflow-hidden shadow-2xl">
-          {/* Media */}
-          <div className="relative bg-black flex items-center justify-center">
+          {/* Media with blurred fill to avoid letterboxing */}
+          <div className="relative bg-black flex items-center justify-center overflow-hidden">
+            {/* Blurred backfill that covers the container */}
+            <img
+              src={post.src}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-50"
+            />
+            {/* Actual image kept uncropped */}
             <img
               ref={imgRef}
               src={post.src}
               alt={post.caption || "uploaded fit"}
-              className="max-h-[82vh] w-auto h-auto object-contain"
+              className="relative z-10 max-h-[82vh] max-w-full w-auto h-auto object-contain"
               loading="eager"
             />
           </div>
@@ -154,4 +162,3 @@ export default function PostLightbox({ postId }) {
     </div>
   );
 }
-
