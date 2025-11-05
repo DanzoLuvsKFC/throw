@@ -1,4 +1,4 @@
-// src/pages/Home.js
+﻿// src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
@@ -129,8 +129,8 @@ function FitCard({ post }) {
       {(post.caption || post.user) && (
         <div className="p-3">
           <div className="text-sm text-charcoal/60">
-            @{post.user ?? "guest"} •{" "}
-            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+            @{post.user ?? "guest"} â€¢{" "}
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "â€”"}
           </div>
           {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
         </div>
@@ -378,7 +378,7 @@ export default function Home() {
     return () => mm.kill();
   }, []);
 
-  /* "How it works" – two-part scroll with overlap (pinned) */
+  /* "How it works" â€“ two-part scroll with overlap (pinned) */
   useLayoutEffect(() => {
     const sec = howRef.current;
     const tWrap = howTitleRef.current;
@@ -427,11 +427,11 @@ export default function Home() {
         defaults: { ease: "power3.out" },
       });
 
-      // Segment A — wrapper slides into place; inner text reveals via ScrollFloat
+      // Segment A â€” wrapper slides into place; inner text reveals via ScrollFloat
       tl.to(tWrap, { y: 0, duration: 0.35 });
       tl.to({}, { duration: 0.12 });
 
-      // Segment B — lift wrapper; cards rise and slightly cover it
+      // Segment B â€” lift wrapper; cards rise and slightly cover it
       tl.to(tWrap, { y: titleUp, duration: 0.35 }, "segB");
       tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
     }, howRef);
@@ -533,7 +533,7 @@ export default function Home() {
                 playOnMount
                 className="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
               >
-                A community moodboard for sustainable style — share full outfits, tag every piece,
+                A community moodboard for sustainable style, share full outfits, tag every piece,
                 and discover real fits from real people.
               </FloatIn>
             </div>
@@ -564,6 +564,8 @@ export default function Home() {
           </svg>
         </a>
       </section>
+
+      
 
       {/* ---------------- HOW IT WORKS (two-segment, pinned) ---------------- */}
       <section
@@ -633,14 +635,14 @@ export default function Home() {
             containerClassName="mt-2 m-0"
             textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
           >
-            search by tag, caption, or @user — with no filters you’ll see everything.
+            search by tag, caption, or @user â€” with no filters youâ€™ll see everything.
           </ScrollFloat>
 
           <div className="mx-auto mt-4 max-w-xl">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="search tags, captions, or @user…"
+              placeholder="search tags, captions, or @userâ€¦"
               aria-label="Search fitography"
               className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
             />
@@ -650,7 +652,7 @@ export default function Home() {
         {filtered.length === 0 ? (
           <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
             {posts.length === 0
-              ? "no uploads yet — hit “flex a fit” to add your first look."
+              ? "no uploads yet â€” hit â€œflex a fitâ€ to add your first look."
               : "no matches for your filters. try a different search."}
           </div>
         ) : (

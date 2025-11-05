@@ -14,11 +14,18 @@ import fit11 from "../assets/fonts/fits/fit 11.jpg";
 import fit13 from "../assets/fonts/fits/fit 13.jpg";
 import fit14 from "../assets/fonts/fits/fit 14.jpg";
 import fit15 from "../assets/fonts/fits/fit 15.jpg";
+import fit16 from "../assets/fonts/fits/fit 16.jpg";
+import fit17 from "../assets/fonts/fits/fit 17.jpg";
+import fit18 from "../assets/fonts/fits/fit 18.jpg";
+import fit19 from "../assets/fonts/fits/fit 19.jpg";
+import fit20 from "../assets/fonts/fits/fit 20.jpg";
+import fit21 from "../assets/fonts/fits/fit 21.jpg";
+import fit22 from "../assets/fonts/fits/fit 22.jpg";
 
 const FeedContext = createContext(null);
 
 /** Bump the key so old empty data doesn't suppress seeds */
-const LS_KEY = "taf_posts_v3";
+const LS_KEY = "taf_posts_v5"; // <- bumped from v3 so new seeds (incl. fit16) load
 
 /** Utility */
 function fileToDataUrl(file) {
@@ -122,6 +129,62 @@ const seedPosts = [
     caption: "",
     tags: ["cargo", "crop top", "black"],
     user: "rolls",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit16",
+    src: fit16,
+    caption: "",
+    tags: ["leather", "denim", "black", "converse"],
+    user: "uveesto",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit17",
+    src: fit17,
+    caption: "",
+    tags: ["button-up", "tie", "brown", "loafers"],
+    user: "uveesto",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit18",
+    src: fit18,
+    caption: "",
+    tags: ["zip-up", "black", "greywash", "denim", "vans"],
+    user: "drake&who",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit19",
+    src: fit19,
+    caption: "",
+    tags: ["denim", "navy", "loafers", "pink", "raw denim"],
+    user: "drake&who",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit20",
+    src: fit20,
+    caption: "",
+    tags: ["denim", "navy", "adidas", "red", "shorts", "button up"],
+    user: "drake&who",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit21",
+    src: fit21,
+    caption: "",
+    tags: ["camo", "navy", "puffer"],
+    user: "kona",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit22",
+    src: fit22,
+    caption: "",
+    tags: ["denim", "black", "light-wash"],
+    user: "kona",
     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
   },
 ];
