@@ -1,6 +1,6 @@
 ﻿// src/App.js
 import "./App.css";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useMemo, useEffect, useState } from "react";
 
 import Home from "./pages/Home";
@@ -121,6 +121,7 @@ function App() {
             <Container className="py-4">
               <Routes location={location}>
                 {/* Render Home for both "/" and "/upload" so the modal overlays it */}
+              <Route path="/throw" element={<Navigate to="/" replace />} />
               <Route path="/" element={<Home />} />
               <Route path="/upload" element={<Home />} />
               {/* Render Home so the lightbox overlays it */}

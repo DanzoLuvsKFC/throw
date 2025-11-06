@@ -1,6 +1,7 @@
 // src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import ScrollVelocity from "../components/ScrollVelocity";
 import ScrollFloat from "../components/ScrollFloat";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
@@ -593,7 +594,15 @@ export default function Home() {
         </a>
       </section>
 
-      
+      {/* ---------------- SCROLL DIVIDER ---------------- */}
+      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden">
+        <ScrollVelocity
+          texts={["taf • throw a fit •"]}
+          velocity={110}
+          parallaxClassName="py-4 md:py-6"
+          scrollerClassName="text-charcoal font-clash text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-[0.95]"
+        />
+      </div>
 
       {/* ---------------- HOW IT WORKS (two-segment, pinned) ---------------- */}
       <section

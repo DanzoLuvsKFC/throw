@@ -5,6 +5,17 @@
 /* Smooth anchor fallback (Lenis overrides when active) */
 html { scroll-behavior: smooth; }
 
+/* Prevent horizontal scroll on full-bleed elements */
+html, body { overflow-x: hidden; }
+
+/* Full-bleed utility for edge-to-edge sections */
+.full-bleed {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
 /* Import local fonts */
 @font-face {
   font-family: "ClashDisplay";
