@@ -595,12 +595,12 @@ export default function Home() {
       </section>
 
       {/* ---------------- SCROLL DIVIDER ---------------- */}
-      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden">
+      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-charcoal">
         <ScrollVelocity
-          texts={["taf • throw a fit •"]}
+          texts={["taf • throw a fit •taf • throw a fit •"]}
           velocity={110}
-          parallaxClassName="py-4 md:py-6"
-          scrollerClassName="text-charcoal font-clash text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-[0.95]"
+          parallaxClassName="py-0.5 md:py-2.5"
+          scrollerClassName="text-charcoal font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
         />
       </div>
 

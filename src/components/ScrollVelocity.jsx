@@ -118,9 +118,12 @@ export const ScrollVelocity = ({
     );
   }
 
+  // Normalize texts to an array in case a string was provided via JSX like texts="[...]"
+  const rows = Array.isArray(texts) ? texts : (typeof texts === 'string' ? [texts] : []);
+
   return (
     <section>
-      {texts.map((text, index) => (
+      {rows.map((text, index) => (
         <VelocityText
           key={index}
           className={className}
