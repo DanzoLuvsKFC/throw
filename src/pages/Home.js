@@ -9,21 +9,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import look1 from "../assets/fonts/fits/fit.jpg";
 import look2 from "../assets/fonts/fits/fit 8.jpg";
 import look3 from "../assets/fonts/fits/fit 12.jpg";
-// Fallback to existing asset. If you want to use your new image,
-// place it in src/assets/fonts/fits and update this import to its exact name.
 import heroHanger from "../assets/fonts/fits/Hero Image.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const aboutImages = [look1, look2, look3];
 
-/* ---------- Reusable title animation (same feel as hero) ---------- */
 function TitleFloat({
   as = "h2",
   children,
   textClassName = "",
   containerClassName = "m-0",
-  playOnMount = false,          // hero passes true; others scroll in
+  playOnMount = false,
   animationDuration = 1,
   ease = "power3.out",
   stagger = 0.02,
@@ -47,7 +44,6 @@ function TitleFloat({
   );
 }
 
-/* ---------- Simple float/fade-in on scroll (can also play on mount) ---------- */
 function FloatIn({
   as = "div",
   children,
@@ -98,7 +94,6 @@ function FloatIn({
   );
 }
 
-/* ---------- Card (feed) ---------- */
 function FitCard({ post }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -209,6 +204,7 @@ function GlideTwoSlotCarousel({
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current;
+    theLeft: { }
     const left = leftRef.current;
     const right = rightRef.current;
     const imgL = imgLeftRef.current;
@@ -304,21 +300,21 @@ function GlideTwoSlotCarousel({
 /* ---------------- How It Works visuals (inline SVGs) ---------------- */
 const UploadIcon = (props) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const TagIcon = (props) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path d="M7 7h5l7 7-5 5-7-7V7z" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+    <path d="M7 7h5l7 7-5 5-7-7V7z" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="9" cy="9" r="1.5" fill="currentColor" />
   </svg>
 );
 
 const DiscoverIcon = (props) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" fill="none"/>
-    <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" fill="none" />
+    <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
 
@@ -364,44 +360,53 @@ export default function Home() {
   const tagRef = useRef(null);
   const hangerRef = useRef(null);
 
-  // HOW-IT-WORKS refs (two-segment scroll)
+  // HOW-IT-WORKS refs
   const howRef = useRef(null);
   const howTitleRef = useRef(null);
   const howCardsRef = useRef(null);
 
-  /* Hero intro motion: keep simple fade/appear; remove slide + carousel */
+  // WAVE refs (wrapper holds Tailwind transforms; inner svg is animated)
+  const waveWrapRef = useRef(null);
+  const waveRef = useRef(null);
+
+  /* Hero intro: wave up first, then hanger */
   useLayoutEffect(() => {
     const textWrap = textWrapRef.current;
     const title = titleRef.current;
     const tag = tagRef.current;
+    const wave = waveRef.current;
+    const hangerEl = hangerRef.current;
     if (!textWrap || !title || !tag) return;
 
     const ctx = gsap.context(() => {
       gsap.set([textWrap, title, tag], { clearProps: "all" });
-      // minimal intro: slight rise + fade for wrapper to complement inner text reveals
+
       gsap.fromTo(
         textWrap,
         { autoAlpha: 0, y: 12 },
-        { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.35 }
+        { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 }
       );
 
-      const hangerEl = hangerRef.current;
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      if (wave) {
+        tl.fromTo(wave, { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.55 });
+      }
+
       if (hangerEl) {
-        gsap.set(hangerEl, { y: 260, autoAlpha: 0 });
-        gsap.to(hangerEl, {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.7,
-          ease: "power3.out",
-          delay: 0.6,
-        });
+        tl.fromTo(
+          hangerEl,
+          { y: 260, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.7 },
+          ">-0.05"
+        );
       }
     });
 
     return () => ctx.revert();
   }, []);
 
-  /* "How it works" – two-part scroll with overlap (pinned) */
+  /* "How it works" – pinned, two-part scroll */
   useLayoutEffect(() => {
     const sec = howRef.current;
     const tWrap = howTitleRef.current;
@@ -410,13 +415,11 @@ export default function Home() {
 
     const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      // Keep wrapper visible; let TitleFloat handle the text reveal
       gsap.set(tWrap, { y: 24, opacity: 1 });
-
       gsap.set(cards, { y: 120, opacity: 0 });
 
-      let titleUp = -100; // how far title wrapper moves up
-      let cardsUp = -130; // how far cards rise
+      let titleUp = -100;
+      let cardsUp = -130;
 
       mm.add(
         {
@@ -450,11 +453,8 @@ export default function Home() {
         defaults: { ease: "power3.out" },
       });
 
-      // Segment A — wrapper slides into place; inner text reveals via ScrollFloat
       tl.to(tWrap, { y: 0, duration: 0.35 });
       tl.to({}, { duration: 0.12 });
-
-      // Segment B — lift wrapper; cards rise and slightly cover it
       tl.to(tWrap, { y: titleUp, duration: 0.35 }, "segB");
       tl.to(cards, { y: cardsUp, opacity: 1, duration: 0.55 }, "segB+=0.1");
     }, howRef);
@@ -465,7 +465,6 @@ export default function Home() {
     };
   }, []);
 
-  /* Fitography filtering logic */
   const allTags = useMemo(() => {
     const map = new Map();
     posts.forEach((p) =>
@@ -549,20 +548,21 @@ export default function Home() {
             </div>
 
             <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
-              <FloatIn
+              {/* CHANGED: use TitleFloat here for the same per-character animation as the H1 */}
+              <TitleFloat
                 as="p"
-                y={16}
-                duration={0.9}
                 playOnMount
-                className="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
+                animationDuration={0.9}
+                ease="power3.out"
+                stagger={0.01}
+                textClassName="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
               >
                 A community moodboard for sustainable style, share full outfits, tag every piece,
                 and discover real fits from real people.
-              </FloatIn>
+              </TitleFloat>
             </div>
           </div>
 
-          {/* Hanger image: animates up from bottom under the text */}
           <div
             ref={hangerRef}
             className="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-[52svh] sm:-bottom-[56svh] md:-bottom-[60svh] lg:-bottom-[64svh] w-[100vw] max-w-none z-0"
@@ -582,20 +582,11 @@ export default function Home() {
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
           aria-label="Scroll to about section"
         >
-          <span className="text-sm md:text-base tracking-wider font-semibold">scroll</span>
-          <svg
-            className="w-7 h-7 md:w-9 md:h-9 mt-2 animate-bounce"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
         </a>
       </section>
 
       {/* ---------------- SCROLL DIVIDER ---------------- */}
-      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-charcoal">
+      <div className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-charcoal bg-creme">
         <ScrollVelocity
           texts={["taf • throw a fit •taf • throw a fit •"]}
           velocity={110}
@@ -604,46 +595,67 @@ export default function Home() {
         />
       </div>
 
-      {/* ---------------- HOW IT WORKS (two-segment, pinned) ---------------- */}
+      {/* ---------------- HOW IT WORKS ---------------- */}
       <section
         id="about"
         ref={howRef}
-        className="relative isolate z-10 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0 overflow-visible"
+        className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
       >
-        {/* Stage (title appears centered first) */}
-        <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
-          {/* Wrapper slides; inner h2 reveals on scroll (same animation as hero) */}
-          <div ref={howTitleRef}>
-            <TitleFloat
-              as="h2"
-              playOnMount={false}
-              animationDuration={1}
-              ease="power3.out"
-              stagger={0.02}
-              scrollStart="top 92%"
-              scrollEnd="top 50%"
-              textClassName="font-clash text-center text-charcoal font-bold leading-[0.95]
-                             text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
-            >
-              how does it work?
-            </TitleFloat>
-          </div>
+        {/* Wave wrapper holds position; inner SVG is animated */}
+        <div
+          ref={waveWrapRef}
+          className="absolute left-1/2 -translate-x-1/2 top-0
+                     -translate-y-28 md:-translate-y-40
+                     w-[102vw] md:w-[104vw] h-20 md:h-28
+                     max-w-none pointer-events-none z-10"
+        >
+          <svg
+            ref={waveRef}
+            className="w-full h-full"
+            viewBox="0 0 1440 120"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z"
+              className="fill-[#cebda6]"
+            />
+          </svg>
         </div>
 
-        {/* Cards start very close to the title; overlap happens during scroll */}
-        <div
-          ref={howCardsRef}
-          className="relative z-10 max-w-6xl mx-auto -mt-15 md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
-        >
-          <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
-            Snap your look, add a caption, and share it with the community.
-          </StepCard>
-          <StepCard Icon={TagIcon} title="Tag the pieces" index="02">
-            Add brands, categories, or details so others can find similar items.
-          </StepCard>
-          <StepCard Icon={DiscoverIcon} title="Discover styles" index="03">
-            Search by tags or captions and build your personal moodboard.
-          </StepCard>
+        <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
+          <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
+            <div ref={howTitleRef}>
+              <TitleFloat
+                as="h2"
+                playOnMount={false}
+                animationDuration={1}
+                ease="power3.out"
+                stagger={0.02}
+                scrollStart="top 92%"
+                scrollEnd="top 50%"
+                textClassName="font-clash text-center text-charcoal font-bold leading-[0.95]
+                         text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
+              >
+                how does it work?
+              </TitleFloat>
+            </div>
+          </div>
+
+          <div
+            ref={howCardsRef}
+            className="relative z-10 max-w-6xl mx-auto -mt-15 md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
+          >
+            <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
+              Snap your look, add a caption, and share it with the community.
+            </StepCard>
+            <StepCard Icon={TagIcon} title="Tag the pieces" index="02">
+              Add brands, categories, or details so others can find similar items.
+            </StepCard>
+            <StepCard Icon={DiscoverIcon} title="Discover styles" index="03">
+              Search by tags or captions and build your personal moodboard.
+            </StepCard>
+          </div>
         </div>
       </section>
 
