@@ -591,7 +591,7 @@ export default function Home() {
           <div className="grid place-items-center">
             <span
               className={
-                "font-clash font-bold uppercase select-none tracking-tight text-[#cebda6] leading-none whitespace-nowrap text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[22rem] col-start-1 row-start-1 " +
+                "font-clash font-bold lowercase select-none tracking-tight text-[#cebda6] leading-none whitespace-nowrap text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[22rem] col-start-1 row-start-1 " +
                 `transition-opacity duration-700 ${hoverBgDismissed ? "opacity-0" : "opacity-100"}`
               }
             >
@@ -726,13 +726,23 @@ export default function Home() {
         {/* Dome background (behind header) */}
         <div
           ref={howCardsRef}
-          className="absolute inset-0 z-[1] pointer-events-none"
+          className="absolute inset-0 z-[1]"
         >
-          <DomeGallery images={aboutImages} grayscale cols={12} rows={5} />
+          <DomeGallery
+            images={aboutImages}
+            grayscale={false}
+            fit={0.82}
+            fitBasis="min"
+            padFactor={0.12}
+            segments={26}
+            tileGapPx={6}
+            vignette
+            vignetteColor="#cebda6"
+          />
         </div>
 
         <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
-          <div className="relative z-[5] min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
+          <div className="relative z-[5] pointer-events-none min-h-[100svh] md:min-h-[100svh] lg:min-h-[110svh] flex items-center justify-center">
             <h2
               ref={howTitleRef}
               className="font-clash text-center text-charcoal font-bold leading-[0.95]
