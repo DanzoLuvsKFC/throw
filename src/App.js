@@ -1,7 +1,7 @@
 ﻿// src/App.js
 import "./App.css";
 import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo } from "react";
 
 import Home from "./pages/Home";
 import OutfitPost from "./pages/OutfitPost";
@@ -10,10 +10,9 @@ import NotFound from "./pages/NotFound";
 
 import Container from "./components/Container";
 import SiteFooter from "./components/SiteFooter";
-import StaggeredMenu from "./components/StaggeredMenu";
+import PillNav from "./components/PillNav";
 import UploadModal from "./components/UploadModal";
 import { FeedProvider } from "./store/FeedContext";
-import Portal from "./components/Portal";
 import BootGate from "./components/BootGate";
 import PostLightbox from "./components/PostLightbox";
 
@@ -48,75 +47,35 @@ const socialLogos = [
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const postMatch = location.pathname.match(/^\/outfit\/([^/]+)$/);
   const viewingPostId = postMatch ? decodeURIComponent(postMatch[1]) : null;
 
-  const menuItems = useMemo(
-    () => [
-      { label: "home", ariaLabel: "Go to home page", link: "/" },
-      { label: "flex a fit", ariaLabel: "Upload a fit", link: "/upload" },
-      { label: "fitography", ariaLabel: "Browse styles", link: "/#collections" },
-      // { label: "profile", ariaLabel: "View my profile", link: "/profile/daniel" },
-    ],
-    []
-  );
+  const navItems = useMemo(() => ([
+    { label: 'Home', href: '/' },
+    { label: 'Flex a Fit', href: '/upload' },
+    { label: 'About', href: '#about' },
+    { label: 'Fitography', href: '#collections' }
+  ]), []);
 
-  const socialItems = useMemo(
-    () => [
-      { label: "Instagram", link: "https://instagram.com" },
-      { label: "GitHub", link: "https://github.com" },
-      { label: "LinkedIn", link: "https://linkedin.com" },
-    ],
-    []
-  );
+  // legacy menu arrays removed with StaggeredMenu
 
-  // Smooth-hash + SPA link handling inside the menu only
-  const handleMenuClick = (e) => {
-    const a = e.target.closest("a[href]");
-    if (!a) return;
-
-    const href = a.getAttribute("href") || "";
-    const target = (a.getAttribute("target") || "").toLowerCase();
-
-    if (/^(https?:|mailto:|tel:)/i.test(href) || target === "_blank") return;
-
-    e.preventDefault();
-
-    if (href.includes("#")) {
-      const [path, hash] = href.split("#");
-      const doScroll = () => {
-        const el = document.getElementById(hash);
-        if (!el) return;
-        if (window.__lenis) {
-          window.__lenis.scrollTo(el, { offset: 0, duration: 1 });
-        } else {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      };
-
-      if (path && path !== location.pathname) {
-        navigate(path);
-        setTimeout(doScroll, 0);
-      } else {
-        doScroll();
-      }
-      return;
-    }
-
-    navigate(href);
-  };
-
-  // Lock body scroll when the slide-over menu is open
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
-  }, [menuOpen]);
+  // Note: smooth hash scrolling now handled by native anchors in PillNav
 
   return (
     <FeedProvider>
       <BootGate>
         <div className="min-h-screen bg-creme relative">
+          <PillNav
+            showLogo={false}
+            items={navItems}
+            activeHref={location.pathname}
+            className="custom-nav"
+            ease="power2.easeOut"
+            baseColor="#2e2e2e"
+            pillColor="#ffffe3"
+            hoveredPillTextColor="#ffffe3"
+            pillTextColor="#2e2e2e"
+          />
           <main>
             <Container className="py-4">
               <Routes location={location}>
@@ -136,37 +95,6 @@ function App() {
         </main>
 
           <SiteFooter logos={socialLogos} logoHeight={40} gap={36} speed={120} direction="left" />
-
-          {/* MENU in a Portal so it can never be clipped by Container/max-width */}
-          <Portal>
-            <div
-              className={`fixed inset-0 z-[9999] ${
-                menuOpen ? "pointer-events-auto" : "pointer-events-none"
-              }`}
-            >
-              <div
-                className="h-full"
-                onClickCapture={menuOpen ? handleMenuClick : undefined}
-              >
-                <StaggeredMenu
-                  position="right"
-                  items={menuItems}
-                  socialItems={socialItems}
-                  displaySocials
-                  displayItemNumbering={false}
-                  showLogo={false}
-                  logoUrl="/logo.svg"
-                  colors={["#2e2e2e", "#ffffe3", "#2e2e2e", "#2e2e2e"]}
-                  accentColor="#ffffe3"
-                  menuButtonColor="#111111"
-                  openMenuButtonColor="#ffffe3"
-                  changeMenuColorOnOpen={true}
-                  onMenuOpen={() => setMenuOpen(true)}
-                  onMenuClose={() => setMenuOpen(false)}
-                />
-              </div>
-            </div>
-          </Portal>
         </div>
       </BootGate>
     </FeedProvider>

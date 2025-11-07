@@ -3,6 +3,7 @@ import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ScrollVelocity from "../components/ScrollVelocity";
 import ScrollFloat from "../components/ScrollFloat";
+import Magnet from "../components/Magnet";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -204,7 +205,6 @@ function GlideTwoSlotCarousel({
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current;
-    theLeft: { }
     const left = leftRef.current;
     const right = rightRef.current;
     const imgL = imgLeftRef.current;
@@ -353,6 +353,10 @@ export default function Home() {
   const { posts } = useFeed();
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+  const [magnetDisabled, setMagnetDisabled] = useState(false);
+  // Hero background "HOVER" visibility state
+  const [showHoverBg, setShowHoverBg] = useState(false);
+  const [hoverBgDismissed, setHoverBgDismissed] = useState(false);
 
   // HERO refs
   const textWrapRef = useRef(null);
@@ -404,6 +408,59 @@ export default function Home() {
     });
 
     return () => ctx.revert();
+  }, []);
+
+  // Fade in background "HOVER" text after main hero content animates
+  useEffect(() => {
+    if (magnetDisabled) return;
+    const t = setTimeout(() => setShowHoverBg(true), 1400);
+    return () => clearTimeout(t);
+  }, [magnetDisabled]);
+
+  // Hide the background text after user hovers near the title (activating magnet)
+  useEffect(() => {
+    if (hoverBgDismissed || magnetDisabled) return;
+    const el = titleRef.current;
+    if (!el) return;
+
+    const padding = 60; // same as Magnet padding around the title
+
+    const onMove = (e) => {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const withinX = Math.abs(cx - e.clientX) < rect.width / 2 + padding;
+      const withinY = Math.abs(cy - e.clientY) < rect.height / 2 + padding;
+      if (withinX && withinY) {
+        setHoverBgDismissed(true);
+        setShowHoverBg(false);
+      }
+    };
+
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [hoverBgDismissed, magnetDisabled]);
+
+  // Disable magnet on touch devices or when reduced motion is preferred
+  useEffect(() => {
+    const pointerMq = window.matchMedia?.("(pointer: coarse)");
+    const reducedMq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+
+    const compute = () => {
+      const isTouch = pointerMq ? pointerMq.matches : false;
+      const reduced = reducedMq ? reducedMq.matches : false;
+      setMagnetDisabled(isTouch || reduced);
+    };
+
+    compute();
+
+    if (pointerMq?.addEventListener) pointerMq.addEventListener("change", compute);
+    if (reducedMq?.addEventListener) reducedMq.addEventListener("change", compute);
+
+    return () => {
+      if (pointerMq?.removeEventListener) pointerMq.removeEventListener("change", compute);
+      if (reducedMq?.removeEventListener) reducedMq.removeEventListener("change", compute);
+    };
   }, []);
 
   /* "How it works" – pinned, two-part scroll */
@@ -516,50 +573,70 @@ export default function Home() {
   return (
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
-      <section className="relative w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] pb-56 md:pb-64 lg:pb-72 flex items-center justify-center">
+      <section className="relative w-full">
+        {/* Big background "HOVER" text (second-section color), fades in last and hides after first hover */}
+        <div
+          aria-hidden="true"
+          className={
+            `pointer-events-none absolute inset-0 z-[5] flex items-center justify-center ` +
+            `transition-opacity duration-700 ${showHoverBg && !hoverBgDismissed && !magnetDisabled ? "opacity-20" : "opacity-0"}`
+          }
+        >
+          <span className="font-clash font-bold uppercase select-none tracking-tight text-[#cebda6] leading-none text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[22rem]">
+            hover
+          </span>
+        </div>
+        {/* Inner wrapper retains original clipping for hero content only */}
+        <div className="relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] pb-56 md:pb-64 lg:pb-72 flex items-center justify-center">
           <div ref={textWrapRef} className="text-center w-fit mx-auto relative z-10">
             <div ref={titleRef} className="block">
-              <TitleFloat
-                as="h1"
-                playOnMount
-                animationDuration={1}
-                ease="power3.out"
-                stagger={0.02}
-                textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
-              >
-                throw a fit
-              </TitleFloat>
+              <Magnet disabled={magnetDisabled} padding={60} magnetStrength={7}>
+                <TitleFloat
+                  as="h1"
+                  playOnMount
+                  animationDuration={1}
+                  ease="power3.out"
+                  stagger={0.02}
+                  textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
+                >
+                  throw a fit
+                </TitleFloat>
+              </Magnet>
             </div>
 
             <div ref={tagRef} className="block -mt-2 xl:-mt-4">
-              <ScrollFloat
-                as="p"
-                playOnMount
-                mountDelay={0.25}
-                animationDuration={0.9}
-                ease="power3.out"
-                stagger={0.01}
-                containerClassName="m-0"
-                textClassName="text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem] lg:text-[1.55rem] xl:text-[1.75rem] 2xl:text-[2rem] text-charcoal/70"
-              >
-                {"don't know what to wear? throw a fit."}
-              </ScrollFloat>
+              <Magnet disabled={magnetDisabled} padding={60} magnetStrength={16}>
+                <ScrollFloat
+                  as="p"
+                  playOnMount
+                  mountDelay={0.25}
+                  animationDuration={0.9}
+                  ease="power3.out"
+                  stagger={0.01}
+                  containerClassName="m-0"
+                  textClassName="text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem] lg:text-[1.55rem] xl:text-[1.75rem] 2xl:text-[2rem] text-charcoal/70"
+                >
+                  {"don't know what to wear? throw a fit."}
+                </ScrollFloat>
+              </Magnet>
             </div>
 
             <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
               {/* CHANGED: use TitleFloat here for the same per-character animation as the H1 */}
-              <TitleFloat
-                as="p"
-                playOnMount
-                animationDuration={0.9}
-                ease="power3.out"
-                stagger={0.01}
-                textClassName="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
-              >
-                A community moodboard for sustainable style, share full outfits, tag every piece,
-                and discover real fits from real people.
-              </TitleFloat>
+              <Magnet disabled={magnetDisabled} padding={50} magnetStrength={18}>
+                <TitleFloat
+                  as="p"
+                  playOnMount
+                  animationDuration={0.9}
+                  ease="power3.out"
+                  stagger={0.01}
+                  textClassName="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
+                >
+                  A community moodboard for sustainable style, share full outfits, tag every piece,
+                  and discover real fits from real people.
+                </TitleFloat>
+              </Magnet>
             </div>
           </div>
 
@@ -575,6 +652,7 @@ export default function Home() {
               draggable="false"
             />
           </div>
+        </div>
         </div>
 
         <a
