@@ -154,7 +154,9 @@ function FitCard({ post }) {
           </div>
           <div className="text-sm text-charcoal/60">
             @{post.user ?? "guest"}
-            <span aria-hidden="true" className="px-1.5">&middot;</span>
+            <span aria-hidden="true" className="px-1.5">
+              &middot;
+            </span>
             {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
           </div>
           {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
@@ -180,6 +182,7 @@ function loadInto(imgEl, src) {
   });
 }
 
+/* eslint-disable no-unused-vars */ // keep this here if you aren't rendering the carousel yet
 function GlideTwoSlotCarousel({
   images,
   gapPx = 20,
@@ -211,6 +214,9 @@ function GlideTwoSlotCarousel({
     const imgR = imgRightRef.current;
     if (!wrap || !left || !right || !imgL || !imgR || images.length === 0) return;
 
+    const onResize = () =>
+      gsap.set([left, right], { x: 0, scale: 1, opacity: 1, clearProps: "filter" });
+
     const ctx = gsap.context(() => {
       gsap.set([imgL, imgR], {
         position: "absolute",
@@ -240,7 +246,8 @@ function GlideTwoSlotCarousel({
         gsap.set(right, { scale: 0.99, opacity: 0.92 });
         tl.to(right, { x: -(w + gapPx), scale: 1, opacity: 1 }, 0);
         tl.to(left, { x: w + gapPx, opacity: 0.82, scale: 0.985, filter: "blur(1px)" }, 0);
-        tl.to(left, { opacity: 0, duration: 0.2, ease: "power2.out" }, `>${-0.12}`);
+        // FIX: use standard GSAP position syntax
+        tl.to(left, { opacity: 0, duration: 0.2, ease: "power2.out" }, ">-=0.12");
 
         tl.add(async () => {
           idxLeftRef.current = idxRightRef.current;
@@ -272,17 +279,14 @@ function GlideTwoSlotCarousel({
 
       timerRef.current = gsap.delayedCall((cycleMs - 600) / 1000, doCycle);
 
-      const onResize = () =>
-        gsap.set([left, right], { x: 0, scale: 1, opacity: 1, clearProps: "filter" });
       window.addEventListener("resize", onResize);
-
-      return () => {
-        window.removeEventListener("resize", onResize);
-        if (timerRef.current) timerRef.current.kill();
-      };
     }, wrapRef);
 
-    return () => ctx.revert();
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (timerRef.current) timerRef.current.kill();
+      ctx.revert();
+    };
   }, [images, gapPx, cycleMs, glideMs]);
 
   return (
@@ -296,6 +300,7 @@ function GlideTwoSlotCarousel({
     </div>
   );
 }
+/* eslint-enable no-unused-vars */
 
 /* ---------------- How It Works visuals (inline SVGs) ---------------- */
 const UploadIcon = (props) => (
@@ -354,7 +359,6 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [magnetDisabled, setMagnetDisabled] = useState(false);
-  // Hero background "HOVER" visibility state
   const [showHoverBg, setShowHoverBg] = useState(false);
   const [hoverBgDismissed, setHoverBgDismissed] = useState(false);
 
@@ -369,7 +373,7 @@ export default function Home() {
   const howTitleRef = useRef(null);
   const howCardsRef = useRef(null);
 
-  // WAVE refs (wrapper holds Tailwind transforms; inner svg is animated)
+  // WAVE refs
   const waveWrapRef = useRef(null);
   const waveRef = useRef(null);
 
@@ -417,13 +421,13 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [magnetDisabled]);
 
-  // Swap the background text from "hover" to "throw a fit" once the user hovers near the title
+  // Swap background text after hover near title (don't hide container)
   useEffect(() => {
     if (hoverBgDismissed || magnetDisabled) return;
     const el = titleRef.current;
     if (!el) return;
 
-    const padding = 60; // same as Magnet padding around the title
+    const padding = 60;
 
     const onMove = (e) => {
       const rect = el.getBoundingClientRect();
@@ -440,7 +444,7 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", onMove);
   }, [hoverBgDismissed, magnetDisabled]);
 
-  // Disable magnet on touch devices or when reduced motion is preferred
+  // Disable magnet on touch devices / reduced motion
   useEffect(() => {
     const pointerMq = window.matchMedia?.("(pointer: coarse)");
     const reducedMq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -600,81 +604,81 @@ export default function Home() {
             </span>
           </div>
         </div>
-        {/* Inner wrapper retains original clipping for hero content only */}
+        {/* Inner wrapper retains original clipping */}
         <div className="relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-10 min-h-[100svh] pb-56 md:pb-64 lg:pb-72 flex items-center justify-center">
-          <div ref={textWrapRef} className="text-center w-fit mx-auto relative z-10">
-            <div ref={titleRef} className="block">
-              <Magnet disabled={magnetDisabled} padding={60} magnetStrength={7}>
-                <TitleFloat
-                  as="h1"
-                  playOnMount
-                  animationDuration={1}
-                  ease="power3.out"
-                  stagger={0.02}
-                  textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
-                >
-                  throw a fit
-                </TitleFloat>
-              </Magnet>
+            <div ref={textWrapRef} className="text-center w-fit mx-auto relative z-10">
+              <div ref={titleRef} className="block">
+                <Magnet disabled={magnetDisabled} padding={60} magnetStrength={7}>
+                  <TitleFloat
+                    as="h1"
+                    playOnMount
+                    animationDuration={1}
+                    ease="power3.out"
+                    stagger={0.02}
+                    textClassName="font-clash font-bold text-charcoal whitespace-nowrap text-[2.2rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[7rem] leading-none"
+                  >
+                    throw a fit
+                  </TitleFloat>
+                </Magnet>
+              </div>
+
+              <div ref={tagRef} className="block -mt-2 xl:-mt-4">
+                <Magnet disabled={magnetDisabled} padding={60} magnetStrength={16}>
+                  <ScrollFloat
+                    as="p"
+                    playOnMount
+                    mountDelay={0.25}
+                    animationDuration={0.9}
+                    ease="power3.out"
+                    stagger={0.01}
+                    containerClassName="m-0"
+                    textClassName="text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem] lg:text-[1.55rem] xl:text-[1.75rem] 2xl:text-[2rem] text-charcoal/70"
+                  >
+                    {"don't know what to wear? throw a fit."}
+                  </ScrollFloat>
+                </Magnet>
+              </div>
+
+              <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
+                <Magnet disabled={magnetDisabled} padding={50} magnetStrength={18}>
+                  <TitleFloat
+                    as="p"
+                    playOnMount
+                    animationDuration={0.9}
+                    ease="power3.out"
+                    stagger={0.01}
+                    textClassName="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
+                  >
+                    A community moodboard for sustainable style, share full outfits, tag every piece,
+                    and discover real fits from real people.
+                  </TitleFloat>
+                </Magnet>
+              </div>
             </div>
 
-            <div ref={tagRef} className="block -mt-2 xl:-mt-4">
-              <Magnet disabled={magnetDisabled} padding={60} magnetStrength={16}>
-                <ScrollFloat
-                  as="p"
-                  playOnMount
-                  mountDelay={0.25}
-                  animationDuration={0.9}
-                  ease="power3.out"
-                  stagger={0.01}
-                  containerClassName="m-0"
-                  textClassName="text-[0.95rem] sm:text-[1.15rem] md:text-[1.35rem] lg:text-[1.55rem] xl:text-[1.75rem] 2xl:text-[2rem] text-charcoal/70"
-                >
-                  {"don't know what to wear? throw a fit."}
-                </ScrollFloat>
-              </Magnet>
-            </div>
-
-            <div className="block mt-6 mx-auto text-center max-w-full sm:max-w-[40ch] md:max-w-[50ch]">
-              {/* CHANGED: use TitleFloat here for the same per-character animation as the H1 */}
-              <Magnet disabled={magnetDisabled} padding={50} magnetStrength={18}>
-                <TitleFloat
-                  as="p"
-                  playOnMount
-                  animationDuration={0.9}
-                  ease="power3.out"
-                  stagger={0.01}
-                  textClassName="m-0 text-charcoal/70 text-[0.85rem] sm:text-[0.95rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.25rem] leading-relaxed break-keep hyphens-none"
-                >
-                  A community moodboard for sustainable style, share full outfits, tag every piece,
-                  and discover real fits from real people.
-                </TitleFloat>
-              </Magnet>
+            <div
+              ref={hangerRef}
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-[52svh] sm:-bottom-[56svh] md:-bottom-[60svh] lg:-bottom-[64svh] w-[100vw] max-w-none z-0"
+              aria-hidden="true"
+            >
+              <img
+                src={heroHanger}
+                alt=""
+                className="block mx-auto w-[100vw] h-auto select-none drop-shadow-xl origin-bottom scale-[1.10] sm:scale-[1.08] md:scale-[1.06] lg:scale-[1.04]"
+                draggable="false"
+              />
             </div>
           </div>
 
-          <div
-            ref={hangerRef}
-            className="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-[52svh] sm:-bottom-[56svh] md:-bottom-[60svh] lg:-bottom-[64svh] w-[100vw] max-w-none z-0"
-            aria-hidden="true"
+          <a
+            href="#about"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
+            aria-label="Scroll to about section"
           >
-            <img
-              src={heroHanger}
-              alt=""
-              className="block mx-auto w-[100vw] h-auto select-none drop-shadow-xl origin-bottom scale-[1.10] sm:scale-[1.08] md:scale-[1.06] lg:scale-[1.04]"
-              draggable="false"
-            />
-          </div>
+            <span className="sr-only">Scroll to about section</span>
+          </a>
         </div>
-        </div>
-
-        <a
-          href="#about"
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal/60 hover:text-charcoal transition flex flex-col items-center"
-          aria-label="Scroll to about section"
-        >
-        </a>
       </section>
 
       {/* ---------------- SCROLL DIVIDER ---------------- */}
@@ -693,7 +697,7 @@ export default function Home() {
         ref={howRef}
         className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
       >
-        {/* Wave wrapper holds position; inner SVG is animated */}
+        {/* Wave */}
         <div
           ref={waveWrapRef}
           className="absolute left-1/2 -translate-x-1/2 top-0
@@ -736,7 +740,7 @@ export default function Home() {
 
           <div
             ref={howCardsRef}
-            className="relative z-10 max-w-6xl mx-auto -mt-15 md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
+            className="relative z-10 max-w-6xl mx-auto -mt-[15px] md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
           >
             <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
               Snap your look, add a caption, and share it with the community.
