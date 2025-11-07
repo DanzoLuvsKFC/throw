@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ScrollVelocity from "../components/ScrollVelocity";
 import ScrollFloat from "../components/ScrollFloat";
 import Magnet from "../components/Magnet";
-import DomeGallery from "../components/DomeGallery";
+// import DomeGallery from "../components/DomeGallery";
+import CardSwap, { Card } from "../components/CardSwap";
+import CircularGallery from "../components/CircularGallery";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -22,6 +24,10 @@ function TitleFloat({
   children,
   textClassName = "",
   containerClassName = "m-0",
+  wordClassName = "",
+  charClassName = "",
+  wordStyle,
+  charStyle,
   playOnMount = false,
   animationDuration = 1,
   ease = "power3.out",
@@ -40,6 +46,10 @@ function TitleFloat({
       stagger={stagger}
       containerClassName={containerClassName}
       textClassName={textClassName}
+      wordClassName={wordClassName}
+      charClassName={charClassName}
+      wordStyle={wordStyle}
+      charStyle={charStyle}
       scrollStart={scrollStart}
       scrollEnd={scrollEnd}
       once={once}
@@ -307,7 +317,7 @@ function GlideTwoSlotCarousel({
 }
 /* eslint-enable no-unused-vars */
 
-/* ---------------- How It Works visuals (inline SVGs) ---------------- */
+/* ---------------- GLOBE visuals (inline SVGs) ---------------- */
 const UploadIcon = (props) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
     <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -363,6 +373,14 @@ export default function Home() {
   const { posts } = useFeed();
   const globeImages = useMemo(
     () => posts.map((p, i) => ({ src: p.src, alt: p.caption || `fit ${i + 1}` })),
+    [posts]
+  );
+  const galleryItems = useMemo(
+    () =>
+      posts.slice(0, 6).map((p, i) => ({
+        image: p.src,
+        text: p.user ? `@${p.user}` : p.caption || `fit ${i + 1}`,
+      })),
     [posts]
   );
   const [query, setQuery] = useState("");
@@ -762,31 +780,10 @@ export default function Home() {
           </svg>
         </div>
 
-        {/* Dome background (behind header) */}
-        <div
-          ref={howCardsRef}
-          className="absolute inset-0 z-[12] opacity-0"
-        >
-          <DomeGallery
-            images={globeImages}
-            grayscale={false}
-            fit={0.82}
-            fitBasis="min"
-            padFactor={0.12}
-            segments={26}
-            tileGapPx={6}
-            vignette
-            vignetteColor="#cebda6"
-            disableItemOpen
-            autoRotate
-            autoRotateSpeed={10}
-            stretchX={1.12}
-          />
-        </div>
-
-        <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
-          <div className="relative z-[5] pointer-events-none min-h-[100svh] md:min-h-[100svh] lg:min-h-[110svh] flex items-center justify-center">
-            <div ref={howTitleRef} className="block">
+        {/* Title + Circular Gallery */}
+        <div className="relative max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-16 overflow-visible">
+          <header className="mb-8 text-center">
+            <div ref={howTitleRef}>
               <TitleFloat
                 as="h2"
                 playOnMount={false}
@@ -797,11 +794,51 @@ export default function Home() {
                 scrollEnd="top 55%"
                 once
                 containerClassName="m-0"
-                textClassName="font-clash font-bold lowercase text-center text-creme tracking-tight leading-[0.9] text-[2.5rem] sm:text-[3.75rem] md:text-[5rem] lg:text-[6rem] xl:text-[7rem]"
+                textClassName="font-clash font-semibold text-charcoal tracking-[-0.01em] leading-[1.05] text-[2.25rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem]"
               >
-                we share fits from around the world
+                find fits around you
               </TitleFloat>
             </div>
+            <ScrollFloat
+              as="p"
+              animationDuration={0.9}
+              ease="power2.out"
+              scrollStart="top 95%"
+              scrollEnd="top 65%"
+              stagger={0.006}
+              containerClassName="mt-3 m-0"
+              textClassName="text-charcoal/70 text-[1.05rem] md:text-[1.15rem] max-w-3xl mx-auto"
+            >
+              Every outfit is tagged, every detail connected. Whether you’re chasing a specific look or just exploring, finding your next fitspo is as simple as a scroll.
+            </ScrollFloat>
+          </header>
+
+          <div
+            ref={howCardsRef}
+            style={{ height: '600px', position: 'relative' }}
+            className="-mt-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
+          >
+            <CircularGallery
+              items={galleryItems}
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              scrollEase={0.02}
+              wavy={false}
+            />
+          </div>
+
+          {/* Bottom marquee */}
+          <div
+            className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-creme mt-10"
+            style={{ backgroundColor: "#cebda6" }}
+          >
+            <ScrollVelocity
+              texts={["taf • throw a fit • taf • throw a fit •"]}
+              velocity={110}
+              parallaxClassName="py-0.5 md:py-2.5"
+              scrollerClassName="text-creme font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
+            />
           </div>
         </div>
       </section>

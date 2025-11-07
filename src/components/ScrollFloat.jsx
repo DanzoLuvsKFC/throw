@@ -10,6 +10,10 @@ const ScrollFloat = ({
   scrollContainerRef,
   containerClassName = "",
   textClassName = "",
+  wordClassName = "",
+  charClassName = "",
+  wordStyle,
+  charStyle,
   animationDuration = 1,
   ease = "back.inOut(2)",
   scrollStart = "center bottom+=50%",
@@ -25,12 +29,26 @@ const ScrollFloat = ({
 
   const splitText = useMemo(() => {
     const text = typeof children === "string" ? children : "";
-    return text.split("").map((char, i) => (
-      <span className="inline-block sf-char" key={i}>
-        {char === " " ? "\u00A0" : char}
-      </span>
-    ));
-  }, [children]);
+    // Split into tokens preserving spaces so we can keep words together
+    const tokens = text.split(/(\s+)/);
+
+    let key = 0;
+    return tokens.map((tok) => {
+      if (tok.trim() === "") {
+        // Render spaces as actual spaces so lines can wrap between words
+        return tok; // keeps natural wrapping at spaces
+      }
+      // For word tokens, wrap characters but prevent breaks within the word
+      const chars = tok.split("").map((ch) => (
+        <span className={`inline-block sf-char ${charClassName}`} style={charStyle} key={key++}>{ch}</span>
+      ));
+      return (
+        <span className={`inline-block whitespace-nowrap sf-word ${wordClassName}`} style={wordStyle} key={key++}>
+          {chars}
+        </span>
+      );
+    });
+  }, [children, wordClassName, charClassName, wordStyle, charStyle]);
 
   useLayoutEffect(() => {
     const el = containerRef.current;

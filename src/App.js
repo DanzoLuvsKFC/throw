@@ -71,7 +71,7 @@ function App() {
             activeHref={location.pathname}
             className="custom-nav"
             ease="power2.easeOut"
-            baseColor="#2e2e2e"
+            baseColor="#cebda6"
             pillColor="#ffffe3"
             hoveredPillTextColor="#ffffe3"
             pillTextColor="#2e2e2e"
