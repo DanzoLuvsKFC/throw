@@ -22,6 +22,11 @@ export default function DomeGallery({
   vignette = false,
   vignetteColor = "rgba(0,0,0,0.35)",
   tileGapPx = 10,
+  // New behavior controls
+  autoRotate = false,
+  autoRotateSpeed = 8, // degrees per second
+  disableItemOpen = false,
+  stretchX = 1.0,
 }) {
   const rootRef = useRef(null);
   const mainRef = useRef(null);
@@ -211,6 +216,27 @@ export default function DomeGallery({
   useEffect(() => {
     applyTransform(rotationRef.current.x, rotationRef.current.y);
   }, []);
+
+  // Auto-rotate the globe (pause while dragging or opening an image)
+  useEffect(() => {
+    if (!autoRotate) return;
+    let raf = null;
+    let last = performance.now();
+    const step = (now) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      if (!draggingRef.current && !openingRef.current) {
+        const nextY = wrapAngleSigned(rotationRef.current.y + (autoRotateSpeed || 0) * dt);
+        rotationRef.current = { x: rotationRef.current.x, y: nextY };
+        applyTransform(rotationRef.current.x, nextY);
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [autoRotate, autoRotateSpeed]);
 
   const stopInertia = useCallback(() => {
     if (inertiaRAF.current) {
@@ -479,6 +505,7 @@ export default function DomeGallery({
   }, [enlargeTransitionMs, openedImageBorderRadius, grayscale]);
 
   const openItemFromElement = (el) => {
+    if (disableItemOpen) return;
     if (openingRef.current) return;
     openingRef.current = true;
     openStartedAtRef.current = performance.now();
@@ -646,7 +673,7 @@ export default function DomeGallery({
           className="absolute inset-0 grid place-items-center overflow-hidden select-none bg-transparent"
           style={{ touchAction: "none", WebkitUserSelect: "none" }}
         >
-          <div className="stage">
+          <div className="stage" style={{ transform: stretchX !== 1 ? `scaleX(${stretchX})` : undefined }}>
             <div ref={sphereRef} className="sphere">
               {items.map((it, i) => (
                 <div
@@ -670,26 +697,38 @@ export default function DomeGallery({
                   }}
                 >
                   <div
-                    className="item__image absolute block overflow-hidden cursor-pointer bg-gray-200 transition-transform duration-300"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={it.alt || "Open image"}
-                    onClick={(e) => {
-                      if (draggingRef.current) return;
-                      if (movedRef.current) return;
-                      if (performance.now() - lastDragEndAt.current < 80) return;
-                      if (openingRef.current) return;
-                      openItemFromElement(e.currentTarget);
+                    className={`item__image absolute block overflow-hidden ${disableItemOpen ? "cursor-default" : "cursor-pointer"} bg-gray-200 transition-transform duration-300`}
+                    role={disableItemOpen ? undefined : "button"}
+                    tabIndex={disableItemOpen ? -1 : 0}
+                    aria-label={disableItemOpen ? undefined : (it.alt || "Open image")}
+                    onClick={
+                      disableItemOpen
+                        ? undefined
+                        : (e) => {
+                            if (draggingRef.current) return;
+                            if (movedRef.current) return;
+                            if (performance.now() - lastDragEndAt.current < 80) return;
+                            if (openingRef.current) return;
+                            openItemFromElement(e.currentTarget);
+                          }
+                    }
+                    onPointerUp={
+                      disableItemOpen
+                        ? undefined
+                        : (e) => {
+                            if (e.pointerType !== "touch") return;
+                            if (draggingRef.current) return;
+                            if (movedRef.current) return;
+                            if (performance.now() - lastDragEndAt.current < 80) return;
+                            if (openingRef.current) return;
+                            openItemFromElement(e.currentTarget);
+                          }
+                    }
+                    style={{
+                      borderRadius: `var(--tile-radius, ${imageBorderRadius})`,
+                      backfaceVisibility: "hidden",
+                      cursor: disableItemOpen ? "default" : "pointer",
                     }}
-                    onPointerUp={(e) => {
-                      if (e.pointerType !== "touch") return;
-                      if (draggingRef.current) return;
-                      if (movedRef.current) return;
-                      if (performance.now() - lastDragEndAt.current < 80) return;
-                      if (openingRef.current) return;
-                      openItemFromElement(e.currentTarget);
-                    }}
-                    style={{ borderRadius: `var(--tile-radius, ${imageBorderRadius})`, backfaceVisibility: "hidden" }}
                   >
                     <img
                       src={it.src}

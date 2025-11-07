@@ -357,6 +357,10 @@ function StepCard({ Icon, title, children, index }) {
 /* ------------------ HOME ------------------ */
 export default function Home() {
   const { posts } = useFeed();
+  const globeImages = useMemo(
+    () => posts.map((p, i) => ({ src: p.src, alt: p.caption || `fit ${i + 1}` })),
+    [posts]
+  );
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [magnetDisabled, setMagnetDisabled] = useState(false);
@@ -729,7 +733,7 @@ export default function Home() {
           className="absolute inset-0 z-[1]"
         >
           <DomeGallery
-            images={aboutImages}
+            images={globeImages}
             grayscale={false}
             fit={0.82}
             fitBasis="min"
@@ -738,6 +742,10 @@ export default function Home() {
             tileGapPx={6}
             vignette
             vignetteColor="#cebda6"
+            disableItemOpen
+            autoRotate
+            autoRotateSpeed={10}
+            stretchX={1.12}
           />
         </div>
 
@@ -745,7 +753,7 @@ export default function Home() {
           <div className="relative z-[5] pointer-events-none min-h-[100svh] md:min-h-[100svh] lg:min-h-[110svh] flex items-center justify-center">
             <h2
               ref={howTitleRef}
-              className="font-clash text-center text-charcoal font-bold leading-[0.95]
+              className="font-clash text-center text-creme font-bold leading-[0.95]
                          text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
             >
               We share fits from around the world
