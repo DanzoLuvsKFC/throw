@@ -28,6 +28,8 @@ function TitleFloat({
   stagger = 0.02,
   scrollStart = "top 92%",
   scrollEnd = "top 50%",
+  once = false,
+  scrub = true,
 }) {
   return (
     <ScrollFloat
@@ -40,6 +42,8 @@ function TitleFloat({
       textClassName={textClassName}
       scrollStart={scrollStart}
       scrollEnd={scrollEnd}
+      once={once}
+      scrub={scrub}
     >
       {children}
     </ScrollFloat>
@@ -532,6 +536,37 @@ export default function Home() {
     };
   }, []);
 
+  // About/second section: play title when section enters, then delay and fade globe
+  useLayoutEffect(() => {
+    const sec = howRef.current;
+    const titleEl = howTitleRef.current;
+    const globeWrap = howCardsRef.current;
+    if (!sec || !titleEl || !globeWrap) return;
+
+    let delayHandle = null;
+    const ctx = gsap.context(() => {
+      gsap.set(globeWrap, { autoAlpha: 0 });
+      const animationDuration = 1; // must match TitleFloat props below
+      const stagger = 0.02; // must match TitleFloat props below
+      const extraDelay = 2; // seconds to wait after title finishes
+
+      ScrollTrigger.create({
+        trigger: sec,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          const charCount = titleEl.querySelectorAll(".sf-char").length || 0;
+          const total = animationDuration + Math.max(0, charCount - 1) * stagger;
+          delayHandle = gsap.delayedCall(total + extraDelay, () => {
+            gsap.to(globeWrap, { autoAlpha: 1, duration: 0.9, ease: "power2.out" });
+          });
+        },
+      });
+    }, howRef);
+
+    return () => ctx.revert();
+  }, []);
+
   const allTags = useMemo(() => {
     const map = new Map();
     posts.forEach((p) =>
@@ -730,7 +765,7 @@ export default function Home() {
         {/* Dome background (behind header) */}
         <div
           ref={howCardsRef}
-          className="absolute inset-0 z-[1]"
+          className="absolute inset-0 z-[12] opacity-0"
         >
           <DomeGallery
             images={globeImages}
@@ -751,13 +786,22 @@ export default function Home() {
 
         <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
           <div className="relative z-[5] pointer-events-none min-h-[100svh] md:min-h-[100svh] lg:min-h-[110svh] flex items-center justify-center">
-            <h2
-              ref={howTitleRef}
-              className="font-clash text-center text-creme font-bold leading-[0.95]
-                         text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
-            >
-              We share fits from around the world
-            </h2>
+            <div ref={howTitleRef} className="block">
+              <TitleFloat
+                as="h2"
+                playOnMount={false}
+                animationDuration={1}
+                ease="power3.out"
+                stagger={0.02}
+                scrollStart="top 85%"
+                scrollEnd="top 55%"
+                once
+                containerClassName="m-0"
+                textClassName="font-clash font-bold lowercase text-center text-creme tracking-tight leading-[0.9] text-[2.5rem] sm:text-[3.75rem] md:text-[5rem] lg:text-[6rem] xl:text-[7rem]"
+              >
+                we share fits from around the world
+              </TitleFloat>
+            </div>
           </div>
         </div>
       </section>
