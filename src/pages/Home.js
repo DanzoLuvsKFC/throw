@@ -838,17 +838,81 @@ export default function Home() {
             />
           </div>
 
-          {/* Bottom marquee */}
-          <div
-            className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-creme mt-10"
-            style={{ backgroundColor: "#cebda6" }}
-          >
-            <ScrollVelocity
-              texts={["taf • throw a fit • taf • throw a fit •"]}
-              velocity={110}
-              parallaxClassName="py-0.5 md:py-2.5"
-              scrollerClassName="text-creme font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
-            />
+        </div>
+      </section>
+
+      {/* ---------------- REVIEWS ---------------- */}
+      <section
+        id="reviews"
+        className="relative isolate z-10 bg-creme left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
+      >
+        {/* Wave (top) */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 top-0
+                     -translate-y-28 md:-translate-y-20
+                     w-[102vw] md:w-[104vw] h-20 md:h-28
+                     max-w-none pointer-events-none z-10"
+          aria-hidden="true"
+        >
+          <svg className="w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z" className="fill-creme" />
+          </svg>
+        </div>
+
+        {/* Spacer to move marquee down without affecting wave */}
+        <div className="h-6 md:h-10" aria-hidden="true" />
+
+        {/* Top marquee under wave */}
+        <div
+          className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-[#cebda6] bg-creme"
+        >
+          <ScrollVelocity
+            texts={["taf • throw a fit • taf • throw a fit •"]}
+            velocity={110}
+            parallaxClassName="py-0.5 md:py-2.5"
+            scrollerClassName="text-[#cebda6] font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
+          <header className="mb-6 md:mb-8 text-center">
+            <TitleFloat
+              as="h2"
+              playOnMount={false}
+              animationDuration={1.05}
+              ease="power3.out"
+              stagger={0.02}
+              containerClassName="m-0"
+              textClassName="font-clash text-2xl md:text-3xl font-bold text-charcoal"
+            >
+              reviews
+            </TitleFloat>
+
+            <ScrollFloat
+              as="p"
+              animationDuration={0.9}
+              ease="power2.out"
+              scrollStart="top 95%"
+              scrollEnd="top 60%"
+              stagger={0.006}
+              containerClassName="mt-2 m-0"
+              textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
+            >
+              what people are saying about throw a fit.
+            </ScrollFloat>
+          </header>
+
+          {/* Simple review quotes grid (placeholder) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1,2,3].map((i) => (
+              <div key={i} className="rounded-xl border border-charcoal/10 bg-white p-4 shadow-sm">
+                <p className="text-charcoal/80 text-[0.95rem] leading-relaxed">
+                  “love the community vibes and how easy it is to discover real fits.”
+                </p>
+                <div className="mt-3 text-sm text-charcoal/50">— user{i}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
