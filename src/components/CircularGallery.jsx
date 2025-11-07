@@ -165,7 +165,7 @@ class Media {
   }
   createShader() {
     const texture = new Texture(this.gl, {
-      generateMipmaps: true,
+      generateMipmaps: false,
     });
     this.program = new Program(this.gl, {
       depthTest: false,
@@ -365,8 +365,8 @@ class App {
   }
   createGeometry() {
     this.planeGeometry = new Plane(this.gl, {
-      heightSegments: 50,
-      widthSegments: 100,
+      heightSegments: 2,
+      widthSegments: 2,
     });
   }
   createMedias(items, bend = 1, textColor, borderRadius, font, wavy) {

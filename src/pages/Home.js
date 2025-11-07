@@ -564,19 +564,15 @@ export default function Home() {
     let delayHandle = null;
     const ctx = gsap.context(() => {
       gsap.set(globeWrap, { autoAlpha: 0 });
-      const animationDuration = 1; // must match TitleFloat props below
-      const stagger = 0.02; // must match TitleFloat props below
-      const extraDelay = 2; // seconds to wait after title finishes
+      const quickDelay = 0.15; // much faster reveal
 
       ScrollTrigger.create({
         trigger: sec,
-        start: "top 85%",
+        start: "top 90%",
         once: true,
         onEnter: () => {
-          const charCount = titleEl.querySelectorAll(".sf-char").length || 0;
-          const total = animationDuration + Math.max(0, charCount - 1) * stagger;
-          delayHandle = gsap.delayedCall(total + extraDelay, () => {
-            gsap.to(globeWrap, { autoAlpha: 1, duration: 0.9, ease: "power2.out" });
+          delayHandle = gsap.delayedCall(quickDelay, () => {
+            gsap.to(globeWrap, { autoAlpha: 1, duration: 0.5, ease: "power2.out" });
           });
         },
       });
@@ -758,6 +754,20 @@ export default function Home() {
         ref={howRef}
         className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
       >
+        {/* Big creme background text */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-30 -translate-y-[40px] md:-translate-y-[64px]"
+        >
+          <span
+            className={
+              "font-clash font-bold lowercase select-none tracking-tight text-creme leading-none whitespace-nowrap " +
+              "text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[28rem]"
+            }
+          >
+            find a fit
+          </span>
+        </div>
         {/* Wave */}
         <div
           ref={waveWrapRef}
@@ -781,7 +791,7 @@ export default function Home() {
         </div>
 
         {/* Title + Circular Gallery */}
-        <div className="relative max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-16 overflow-visible">
+        <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-16 overflow-visible">
           <header className="mb-8 text-center">
             <div ref={howTitleRef}>
               <TitleFloat
@@ -816,7 +826,7 @@ export default function Home() {
           <div
             ref={howCardsRef}
             style={{ height: '600px', position: 'relative' }}
-            className="-mt-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
+            className="-mt-20 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
           >
             <CircularGallery
               items={galleryItems}
