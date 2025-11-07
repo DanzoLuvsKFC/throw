@@ -417,7 +417,7 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [magnetDisabled]);
 
-  // Hide the background text after user hovers near the title (activating magnet)
+  // Swap the background text from "hover" to "throw a fit" once the user hovers near the title
   useEffect(() => {
     if (hoverBgDismissed || magnetDisabled) return;
     const el = titleRef.current;
@@ -433,7 +433,6 @@ export default function Home() {
       const withinY = Math.abs(cy - e.clientY) < rect.height / 2 + padding;
       if (withinX && withinY) {
         setHoverBgDismissed(true);
-        setShowHoverBg(false);
       }
     };
 
@@ -574,17 +573,32 @@ export default function Home() {
     <div className="bg-creme">
       {/* ---------------- HERO ---------------- */}
       <section className="relative w-full">
-        {/* Big background "HOVER" text (second-section color), fades in last and hides after first hover */}
+        {/* Big background text crossfades from "hover" to "throw a fit" */}
         <div
           aria-hidden="true"
           className={
             `pointer-events-none absolute inset-0 z-[5] flex items-center justify-center ` +
-            `transition-opacity duration-700 ${showHoverBg && !hoverBgDismissed && !magnetDisabled ? "opacity-20" : "opacity-0"}`
+            `transition-opacity duration-700 ${showHoverBg && !magnetDisabled ? "opacity-20" : "opacity-0"}`
           }
         >
-          <span className="font-clash font-bold uppercase select-none tracking-tight text-[#cebda6] leading-none text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[22rem]">
-            hover
-          </span>
+          <div className="grid place-items-center">
+            <span
+              className={
+                "font-clash font-bold uppercase select-none tracking-tight text-[#cebda6] leading-none whitespace-nowrap text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[22rem] col-start-1 row-start-1 " +
+                `transition-opacity duration-700 ${hoverBgDismissed ? "opacity-0" : "opacity-100"}`
+              }
+            >
+              hover
+            </span>
+            <span
+              className={
+                "font-clash font-bold select-none tracking-tight text-[#cebda6] leading-none whitespace-nowrap text-[4.5rem] sm:text-[7.5rem] md:text-[11rem] lg:text-[15rem] xl:text-[19rem] 2xl:text-[21rem] col-start-1 row-start-1 " +
+                `transition-opacity duration-700 ${hoverBgDismissed ? "opacity-100" : "opacity-0"}`
+              }
+            >
+              throw a fit
+            </span>
+          </div>
         </div>
         {/* Inner wrapper retains original clipping for hero content only */}
         <div className="relative overflow-hidden">

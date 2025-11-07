@@ -1,7 +1,8 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.082493bc.css",
-    "main.js": "/throw/static/js/main.ec1e2ef0.js",
+    "main.css": "/throw/static/css/main.62e42974.css",
+    "main.js": "/throw/static/js/main.638c68ab.js",
+    "static/media/Hero Image.png": "/throw/static/media/Hero Image.5048088517ad58f2ea44.png",
     "static/media/fit 16.jpg": "/throw/static/media/fit 16.2888d10d496f461a9ac7.jpg",
     "static/media/fit 17.jpg": "/throw/static/media/fit 17.26a02cae09f5414d34f1.jpg",
     "static/media/fit 6.jpg": "/throw/static/media/fit 6.0239ea23c9c14459aeb6.jpg",
@@ -28,11 +29,11 @@
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.082493bc.css.map": "/throw/static/css/main.082493bc.css.map",
-    "main.ec1e2ef0.js.map": "/throw/static/js/main.ec1e2ef0.js.map"
+    "main.62e42974.css.map": "/throw/static/css/main.62e42974.css.map",
+    "main.638c68ab.js.map": "/throw/static/js/main.638c68ab.js.map"
   },
   "entrypoints": [
-    "static/css/main.082493bc.css",
-    "static/js/main.ec1e2ef0.js"
+    "static/css/main.62e42974.css",
+    "static/js/main.638c68ab.js"
   ]
 }
