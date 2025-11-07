@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ScrollVelocity from "../components/ScrollVelocity";
 import ScrollFloat from "../components/ScrollFloat";
 import Magnet from "../components/Magnet";
+import DomeGallery from "../components/DomeGallery";
 import { useFeed } from "../store/FeedContext";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -468,6 +469,8 @@ export default function Home() {
 
   /* "How it works" – pinned, two-part scroll */
   useLayoutEffect(() => {
+    // disabled pinned scroll behavior for dome section
+    return;
     const sec = howRef.current;
     const tWrap = howTitleRef.current;
     const cards = howCardsRef.current;
@@ -682,12 +685,13 @@ export default function Home() {
       </section>
 
       {/* ---------------- SCROLL DIVIDER ---------------- */}
-      <div className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-charcoal bg-creme">
+      <div className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-creme"
+        style={{ backgroundColor: "#cebda6" }}>
         <ScrollVelocity
           texts={["taf • throw a fit •taf • throw a fit •"]}
           velocity={110}
           parallaxClassName="py-0.5 md:py-2.5"
-          scrollerClassName="text-charcoal font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
+          scrollerClassName="text-creme font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
         />
       </div>
 
@@ -719,38 +723,23 @@ export default function Home() {
           </svg>
         </div>
 
-        <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
-          <div className="min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
-            <div ref={howTitleRef}>
-              <TitleFloat
-                as="h2"
-                playOnMount={false}
-                animationDuration={1}
-                ease="power3.out"
-                stagger={0.02}
-                scrollStart="top 92%"
-                scrollEnd="top 50%"
-                textClassName="font-clash text-center text-charcoal font-bold leading-[0.95]
-                         text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
-              >
-                how does it work?
-              </TitleFloat>
-            </div>
-          </div>
+        {/* Dome background (behind header) */}
+        <div
+          ref={howCardsRef}
+          className="absolute inset-0 z-[1] pointer-events-none"
+        >
+          <DomeGallery images={aboutImages} grayscale cols={12} rows={5} />
+        </div>
 
-          <div
-            ref={howCardsRef}
-            className="relative z-10 max-w-6xl mx-auto -mt-[15px] md:-mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3"
-          >
-            <StepCard Icon={UploadIcon} title="Upload your fit" index="01">
-              Snap your look, add a caption, and share it with the community.
-            </StepCard>
-            <StepCard Icon={TagIcon} title="Tag the pieces" index="02">
-              Add brands, categories, or details so others can find similar items.
-            </StepCard>
-            <StepCard Icon={DiscoverIcon} title="Discover styles" index="03">
-              Search by tags or captions and build your personal moodboard.
-            </StepCard>
+        <div className="max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-0">
+          <div className="relative z-[5] min-h-[70svh] md:min-h-[75svh] flex items-center justify-center">
+            <h2
+              ref={howTitleRef}
+              className="font-clash text-center text-charcoal font-bold leading-[0.95]
+                         text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[4.75rem]"
+            >
+              We share fits from around the world
+            </h2>
           </div>
         </div>
       </section>
