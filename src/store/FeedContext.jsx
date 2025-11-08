@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 /* --- Import ONLY the fits you want in Fitography --- */
 /* Paths are from this file to src/assets/fonts/fits/... */
+import fit1 from "../assets/fonts/fits/fit.jpg";
 import fit2 from "../assets/fonts/fits/fit 2.jpg";
 import fit3 from "../assets/fonts/fits/fit 3.jpg";
 import fit4 from "../assets/fonts/fits/fit 4.jpg";
@@ -34,7 +35,7 @@ import fit30 from "../assets/fonts/fits/fit 30.jpg";
 const FeedContext = createContext(null);
 
 /** Bump the key so old empty data doesn't suppress seeds */
-const LS_KEY = "taf_posts_v7"; // <- bumped from v3 so new seeds (incl. fit16) load
+const LS_KEY = "taf_posts_v8"; // <- bumped from v3 so new seeds (incl. fit16) load
 
 /** Utility */
 function fileToDataUrl(file) {
@@ -52,6 +53,14 @@ function makeId() {
 
 /** --- Seed posts (exactly what you asked for) --- */
 const seedPosts = [
+  {
+    id: "seed_fit1",
+    src: fit1,
+    caption: "",
+    tags: ["red", "trench coat", "black"],
+    user: "leratolaka",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 11,
+  },
   {
     id: "seed_fit2",
     src: fit2,

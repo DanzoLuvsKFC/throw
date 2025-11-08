@@ -347,9 +347,9 @@ const CheckIcon = (props) => (
   </svg>
 );
 
-function StepCard({ Icon, title, children, index }) {
+function StepCard({ Icon, title, children, index, delay = 0 }) {
   return (
-    <FloatIn as="div" y={26} duration={0.9}>
+    <FloatIn as="div" y={26} duration={0.9} delay={delay}>
       <TiltedCard number={String(index)} title={title} Icon={Icon}>
         {children}
       </TiltedCard>
@@ -617,7 +617,7 @@ export default function Home() {
         map.set(key, (map.get(key) || 0) + 1);
       })
     );
-    return Array.from(map.entries())
+  return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([t]) => t);
   }, [posts]);
@@ -1053,16 +1053,16 @@ export default function Home() {
 
           <div className="mt-6">
             <div className="flex flex-row items-center justify-center gap-6 flex-wrap md:flex-nowrap md:overflow-visible overflow-x-auto px-2">
-              <StepCard Icon={UploadIcon} title="upload your fit" index="1">
+              <StepCard Icon={UploadIcon} title="upload your fit" index="1" delay={0.24}>
                 Post a clean photo of your outfit.
               </StepCard>
-              <StepCard Icon={TagIcon} title="tag each piece" index="2">
+              <StepCard Icon={TagIcon} title="tag each piece" index="2" delay={0.60}>
                 Add tags for brands, items, and vibes.
               </StepCard>
-              <StepCard Icon={DiscoverIcon} title="flex it" index="3">
+              <StepCard Icon={DiscoverIcon} title="flex it" index="3" delay={0.72}>
                 Publish and let the timeline see.
               </StepCard>
-              <StepCard Icon={CheckIcon} title="done" index="4">
+              <StepCard Icon={CheckIcon} title="done" index="4" delay={0.96}>
                 You’re set. Explore and get inspired.
               </StepCard>
             </div>
@@ -1190,7 +1190,3 @@ export default function Home() {
       </section>    </div>
   );
 }
-
-
-
-
