@@ -1045,16 +1045,16 @@ export default function Home() {
 
           <div className="mt-6">
           <div className="flex flex-row items-center justify-center gap-6 flex-wrap md:flex-nowrap md:overflow-visible overflow-x-auto px-2">
-            <StepCard Icon={UploadIcon} title="Upload your fit" index="1">
+            <StepCard Icon={UploadIcon} title="upload your fit" index="1">
               Post a clean photo of your outfit.
             </StepCard>
-            <StepCard Icon={TagIcon} title="Tag each piece" index="2">
+            <StepCard Icon={TagIcon} title="tag each piece" index="2">
               Add tags for brands, items, and vibes.
             </StepCard>
-            <StepCard Icon={DiscoverIcon} title="Flex it" index="3">
+            <StepCard Icon={DiscoverIcon} title="flex it" index="3">
               Publish and let the timeline see.
             </StepCard>
-            <StepCard Icon={CheckIcon} title="Done" index="4">
+            <StepCard Icon={CheckIcon} title="done" index="4">
               You’re set. Explore and get inspired.
             </StepCard>
           </div>
