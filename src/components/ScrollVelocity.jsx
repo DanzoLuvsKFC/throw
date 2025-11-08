@@ -33,7 +33,7 @@ export const ScrollVelocity = ({
   className = '',
   damping = 50,
   stiffness = 400,
-  numCopies = 6,
+  numCopies = 10,
   velocityMapping = { input: [0, 1000], output: [0, 5] },
   parallaxClassName,
   scrollerClassName,
@@ -107,9 +107,9 @@ export const ScrollVelocity = ({
     }
 
     return (
-      <div className={`${parallaxClassName} relative overflow-hidden`} style={parallaxStyle}>
+      <div className={`${parallaxClassName} relative w-full overflow-hidden`} style={parallaxStyle}>
         <motion.div
-          className={`flex whitespace-nowrap text-left font-bold tracking-[-0.02em] ${scrollerClassName}`}
+          className={`flex whitespace-nowrap text-left font-bold tracking-[-0.02em] will-change-transform ${scrollerClassName}`}
           style={{ x, ...scrollerStyle }}
         >
           {spans}
@@ -119,7 +119,23 @@ export const ScrollVelocity = ({
   }
 
   // Normalize texts to an array in case a string was provided via JSX like texts="[...]"
-  const rows = Array.isArray(texts) ? texts : (typeof texts === 'string' ? [texts] : []);
+  // Also sanitize any non-ASCII or control characters that may appear as unknown glyphs (�)
+  const toArray = Array.isArray(texts) ? texts : (typeof texts === 'string' ? [texts] : []);
+  const rows = toArray.map((t) => {
+    if (typeof t !== 'string') return t;
+    // Start by replacing control/unknown chars with a bullet marker
+    let s = t.replace(/[\u0000-\u001F\u007F-\u009F\uFFFD]+/g, '•');
+
+    // Normalize various separator variants to a bullet
+    s = s
+      .replace(/[\-·]/g, '•')        // dashes and middle dots -> bullet
+      .replace(/•\s*\?\s*•/g, '•')  // remove stray question mark between bullets
+      .replace(/•{2,}/g, '•');        // collapse multiple bullets to one
+
+    // Finally enforce single spacing around bullets and collapse spaces
+    s = s.replace(/\s*•\s*/g, ' • ').replace(/\s{2,}/g, ' ');
+    return s;
+  });
 
   return (
     <section>

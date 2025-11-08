@@ -1,4 +1,4 @@
-// src/pages/Home.js
+﻿// src/pages/Home.js
 import { useMemo, useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ScrollVelocity from "../components/ScrollVelocity";
@@ -167,8 +167,8 @@ function FitCard({ post }) {
       {(post.caption || post.user) && (
         <div className="p-3">
           <div className="text-sm text-charcoal/60 hidden">
-            @{post.user ?? "guest"} •{" "}
-            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+            @{post.user ?? "guest"} ΓÇó{" "}
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "ΓÇö"}
           </div>
           <div className="text-sm text-charcoal/60">
             @{post.user ?? "guest"}
@@ -520,7 +520,7 @@ export default function Home() {
     };
   }, []);
 
-  /* "How it works" – pinned, two-part scroll */
+  /* "How it works" ΓÇô pinned, two-part scroll */
   useLayoutEffect(() => {
     // disabled pinned scroll behavior for dome section
     return;
@@ -769,7 +769,7 @@ export default function Home() {
       <div className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-creme"
         style={{ backgroundColor: "#cebda6" }}>
         <ScrollVelocity
-          texts={["taf • throw a fit •taf • throw a fit •"]}
+          texts={["taf ΓÇó throw a fit ΓÇótaf ΓÇó throw a fit ΓÇó"]}
           velocity={110}
           parallaxClassName="py-0.5 md:py-2.5"
           scrollerClassName="text-creme font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
@@ -847,7 +847,7 @@ export default function Home() {
               containerClassName="mt-3 m-0"
               textClassName="text-charcoal/70 text-[1.05rem] md:text-[1.15rem] max-w-3xl mx-auto"
             >
-              Every outfit is tagged, every detail connected. Whether you’re chasing a specific look or just exploring, finding your next fitspo is as simple as a scroll.
+              Every outfit is tagged, every detail connected. Whether youΓÇÖre chasing a specific look or just exploring, finding your next fitspo is as simple as a scroll.
             </ScrollFloat>
           </header>
           <div
@@ -894,7 +894,7 @@ export default function Home() {
           className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-[#cebda6] bg-creme"
         >
           <ScrollVelocity
-            texts={["taf • throw a fit • taf • throw a fit •"]}
+            texts={["taf ΓÇó throw a fit ΓÇó taf ΓÇó throw a fit ΓÇó"]}
             velocity={110}
             parallaxClassName="py-0.5 md:py-2.5"
             scrollerClassName="text-[#cebda6] font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
@@ -949,9 +949,9 @@ export default function Home() {
             {[1,2,3].map((i) => (
               <div key={i} className="rounded-xl border border-charcoal/10 bg-white p-4 shadow-sm">
                 <p className="text-charcoal/80 text-[0.95rem] leading-relaxed">
-                  “love the community vibes and how easy it is to discover real fits.”
+                  ΓÇ£love the community vibes and how easy it is to discover real fits.ΓÇ¥
                 </p>
-                <div className="mt-3 text-sm text-charcoal/50">— user{i}</div>
+                <div className="mt-3 text-sm text-charcoal/50">ΓÇö user{i}</div>
               </div>
             ))}
           </div>
@@ -983,36 +983,6 @@ export default function Home() {
         id="how-to-flex"
         className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
       >
-        {/* Big creme background text */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-30 -translate-y-[40px] md:-translate-y-[64px]"
-        >
-          <span
-            className={
-              "font-clash font-bold lowercase select-none tracking-tight text-creme leading-none whitespace-nowrap " +
-              "text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[28rem]"
-            }
-          >
-            how to flex
-          </span>
-        </div>
-
-        {/* Spacer to move marquee down without affecting wave */}
-        <div className="h-6 md:h-10" aria-hidden="true" />
-
-        {/* Creme marquee under wave */}
-        <div
-          className="relative z-30 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-creme bg-[#cebda6]"
-        >
-          <ScrollVelocity
-            texts={["taf • throw a fit • "]}
-            velocity={110}
-            parallaxClassName="py-0.5 md:py-2.5"
-            scrollerClassName="text-creme font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
-          />
-        </div>
-
         <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
           <header className="mb-6 md:mb-8 text-center">
             <TitleFloat
@@ -1055,7 +1025,7 @@ export default function Home() {
               Publish and let the timeline see.
             </StepCard>
             <StepCard Icon={CheckIcon} title="Done" index="4">
-              You’re set. Explore and get inspired.
+              YouΓÇÖre set. Explore and get inspired.
             </StepCard>
           </div>
           </div>
@@ -1087,14 +1057,14 @@ export default function Home() {
             containerClassName="mt-2 m-0"
             textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
           >
-            search by tag, caption, or @user — with no filters you’ll see everything.
+            search by tag, caption, or @user ΓÇö with no filters youΓÇÖll see everything.
           </ScrollFloat>
 
           <div className="mx-auto mt-4 max-w-xl">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="search tags, captions, or @user…"
+              placeholder="search tags, captions, or @userΓÇª"
               aria-label="Search fitography"
               className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
             />
@@ -1104,7 +1074,7 @@ export default function Home() {
         {filtered.length === 0 ? (
           <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
             {posts.length === 0
-              ? "no uploads yet — hit “flex a fit” to add your first look."
+              ? "no uploads yet ΓÇö hit ΓÇ£flex a fitΓÇ¥ to add your first look."
               : "no matches for your filters. try a different search."}
           </div>
         ) : (
