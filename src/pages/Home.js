@@ -15,6 +15,7 @@ import look2 from "../assets/fonts/fits/fit 8.jpg";
 import look3 from "../assets/fonts/fits/fit 12.jpg";
 import heroHanger from "../assets/fonts/fits/Hero Image.png";
 import ReviewsMarquee from "../components/reviews/ReviewsMarquee";
+import TiltedCard from "../components/TiltedCard";
 import "../styles/reviews.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -348,30 +349,10 @@ const CheckIcon = (props) => (
 
 function StepCard({ Icon, title, children, index }) {
   return (
-    <FloatIn
-      as="div"
-      y={26}
-      duration={0.9}
-      className="rounded-2xl border border-charcoal/10 bg-creme p-5 md:p-6"
-    >
-      <div className="flex items-start gap-4">
-        <div className="relative">
-          <div className="w-11 h-11 rounded-xl bg-creme border border-charcoal/10 flex items-center justify-center text-charcoal">
-            <Icon className="w-6 h-6" />
-          </div>
-          <span className="absolute -top-2 -right-2 text-xs font-semibold text-charcoal/60">
-            {index}
-          </span>
-        </div>
-        <div>
-          <h3 className="font-clash text-lg md:text-xl text-charcoal font-semibold">
-            {title}
-          </h3>
-          <p className="mt-1.5 text-charcoal/70 text-[0.95rem] md:text-[1.05rem] leading-relaxed">
-            {children}
-          </p>
-        </div>
-      </div>
+    <FloatIn as="div" y={26} duration={0.9}>
+      <TiltedCard number={String(index)} title={title} Icon={Icon}>
+        {children}
+      </TiltedCard>
     </FloatIn>
   );
 }
@@ -1032,7 +1013,8 @@ export default function Home() {
             </ScrollFloat>
           </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <div className="mt-6">
+          <div className="flex flex-row items-center justify-center gap-6 flex-wrap md:flex-nowrap md:overflow-visible overflow-x-auto px-2">
             <StepCard Icon={UploadIcon} title="Upload your fit" index="1">
               Post a clean photo of your outfit.
             </StepCard>
@@ -1045,6 +1027,7 @@ export default function Home() {
             <StepCard Icon={CheckIcon} title="Done" index="4">
               You’re set. Explore and get inspired.
             </StepCard>
+          </div>
           </div>
         </div>
       </section>

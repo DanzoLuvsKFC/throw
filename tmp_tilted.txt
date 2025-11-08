@@ -1,0 +1,138 @@
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useSpring } from "motion/react";
+
+const springValues = {
+  damping: 30,
+  stiffness: 120,
+  mass: 1.6,
+};
+
+export default function TiltedCard({
+  number = "1",
+  title = "",
+  Icon,
+  children,
+  className = "",
+  containerClassName = "",
+  rotateAmplitude = 12,
+  scaleOnHover = 1.04,
+  size = "320px",
+  numberScale = 2,
+}) {
+  const ref = useRef(null);
+  const boxRef = useRef(null);
+  const numRef = useRef(null);
+
+  const rotateXMV = useMotionValue(0);
+  const rotateYMV = useMotionValue(0);
+  const rotateX = useSpring(rotateXMV, springValues);
+  const rotateY = useSpring(rotateYMV, springValues);
+  const scale = useSpring(1, springValues);
+
+  function handleMouse(e) {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left - rect.width / 2;
+    const offsetY = e.clientY - rect.top - rect.height / 2;
+
+    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+
+    rotateXMV.set(rotationX);
+    rotateYMV.set(rotationY);
+  }
+
+  function handleMouseEnter() {
+    scale.set(scaleOnHover);
+  }
+
+  function handleMouseLeave() {
+    scale.set(1);
+    rotateXMV.set(0);
+    rotateYMV.set(0);
+  }
+
+  // Resize big number to touch top/bottom of square
+  function sizeNumber() {
+    const box = boxRef.current;
+    const num = numRef.current;
+    if (!box || !num) return;
+    const h = box.clientHeight;
+    if (!h) return;
+    // subtract a little to avoid clipping the glyphs
+    num.style.fontSize = `${Math.max(10, h * Number(numberScale))}px`;
+    num.style.lineHeight = 1;
+  }
+
+  // Attach resize observer
+  useEffect(() => {
+    sizeNumber();
+    let ro;
+    const box = boxRef.current;
+    if (typeof window !== "undefined" && "ResizeObserver" in window) {
+      ro = new ResizeObserver(sizeNumber);
+      if (box) ro.observe(box);
+      return () => ro && ro.disconnect();
+    }
+    window.addEventListener("resize", sizeNumber);
+    return () => window.removeEventListener("resize", sizeNumber);
+  }, []);
+
+  return (
+    <figure
+      className={`relative w-full h-full [perspective:800px] ${containerClassName}`}
+      onMouseMove={handleMouse}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        ref={ref}
+        className="relative [transform-style:preserve-3d]"
+        style={{ rotateX, rotateY, scale }}
+      >
+        <div
+          ref={boxRef}
+          className={`relative aspect-square mx-auto rounded-2xl border border-charcoal/10 bg-creme p-5 md:p-6 overflow-hidden ${className}`}
+          style={{ width: size }}
+        >
+          {/* Big background number */}
+          <span
+            ref={numRef}
+            aria-hidden
+            className="pointer-events-none absolute inset-0 flex items-center justify-center font-clash font-bold text-charcoal/10 leading-none select-none"
+            style={{ transform: "translateZ(1px)" }}
+          >
+            {number}
+          </span>
+
+          {/* Foreground content */}
+          <div className="relative z-[2] will-change-transform [transform:translateZ(28px)] h-full flex flex-col">
+            {Icon ? (
+              <div className="mb-3">
+                <div className="w-11 h-11 rounded-xl bg-creme/80 border border-charcoal/10 flex items-center justify-center text-charcoal">
+                  <Icon className="w-6 h-6" />
+                </div>
+              </div>
+            ) : null}
+            {title ? (
+              <div className="relative inline-block mb-2">
+                {/* Soft shadow to simulate floating pill */}
+                <div aria-hidden className="absolute inset-0 translate-y-1 scale-95 rounded-full bg-black/30 blur-md opacity-40" />
+                <h3 className="relative font-clash text-[0.95rem] md:text-[1.05rem] font-semibold text-creme rounded-full px-3.5 py-2 bg-[#5b4a3a] shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
+                  {title}
+                </h3>
+              </div>
+            ) : null}
+            {children ? (
+              <p className="mt-2 text-charcoal/80 text-[0.95rem] md:text-[1.05rem] leading-relaxed">
+                {children}
+              </p>
+            ) : null}
+            <div className="flex-1" />
+          </div>
+        </div>
+      </motion.div>
+    </figure>
+  );
+}
+
