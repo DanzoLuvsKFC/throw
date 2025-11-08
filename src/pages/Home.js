@@ -340,13 +340,19 @@ const DiscoverIcon = (props) => (
   </svg>
 );
 
+const CheckIcon = (props) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 function StepCard({ Icon, title, children, index }) {
   return (
     <FloatIn
       as="div"
       y={26}
       duration={0.9}
-      className="rounded-2xl border border-charcoal/10 bg-white p-5 md:p-6"
+      className="rounded-2xl border border-charcoal/10 bg-creme p-5 md:p-6"
     >
       <div className="flex items-start gap-4">
         <div className="relative">
@@ -976,7 +982,73 @@ export default function Home() {
             <ReviewsMarquee items={reviewItems.bottom} direction="left" duration={62} />
           </div>
         </div>
+        {/* Bottom wave (solid #cebda6) */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-8 md:translate-y-12
+                     w-[102vw] md:w-[104vw] h-20 md:h-28 max-w-none pointer-events-none z-10"
+          aria-hidden="true"
+        >
+          <svg className="w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path
+              d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z"
+              className="fill-[#cebda6]"
+            />
+          </svg>
+        </div>
       </section>
+
+      {/* ---------------- HOW TO FLEX ---------------- */}
+      <section
+        id="how-to-flex"
+        className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
+      >
+        <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
+          <header className="mb-6 md:mb-8 text-center">
+            <TitleFloat
+              as="h2"
+              playOnMount={false}
+              animationDuration={1}
+              ease="power3.out"
+              stagger={0.02}
+              scrollStart="top 85%"
+              scrollEnd="top 55%"
+              once
+              containerClassName="m-0"
+              textClassName="font-clash font-semibold text-charcoal tracking-[-0.01em] leading-[1.05] text-[2.25rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem]"
+            >
+              how to flex?
+            </TitleFloat>
+            <ScrollFloat
+              as="p"
+              animationDuration={0.9}
+              ease="power2.out"
+              scrollStart="top 95%"
+              scrollEnd="top 60%"
+              stagger={0.006}
+              containerClassName="mt-2 m-0"
+              textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
+            >
+              share your fit, tag each piece, and show your style.
+            </ScrollFloat>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <StepCard Icon={UploadIcon} title="Upload your fit" index="1">
+              Post a clean photo of your outfit.
+            </StepCard>
+            <StepCard Icon={TagIcon} title="Tag each piece" index="2">
+              Add tags for brands, items, and vibes.
+            </StepCard>
+            <StepCard Icon={DiscoverIcon} title="Flex it" index="3">
+              Publish and let the timeline see.
+            </StepCard>
+            <StepCard Icon={CheckIcon} title="Done" index="4">
+              You’re set. Explore and get inspired.
+            </StepCard>
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- FITOGRAPHY ---------------- */}
       <section id="collections" className="relative z-0 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
