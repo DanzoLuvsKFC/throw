@@ -168,7 +168,7 @@ function FitCard({ post }) {
         <div className="p-3">
           <div className="text-sm text-charcoal/60 hidden">
             @{post.user ?? "guest"} •{" "}
-            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "—"}
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "-"}
           </div>
           <div className="text-sm text-charcoal/60">
             @{post.user ?? "guest"}
@@ -949,9 +949,9 @@ export default function Home() {
             {[1,2,3].map((i) => (
               <div key={i} className="rounded-xl border border-charcoal/10 bg-white p-4 shadow-sm">
                 <p className="text-charcoal/80 text-[0.95rem] leading-relaxed">
-                  “love the community vibes and how easy it is to discover real fits.”
+                  'love the community vibes and how easy it is to discover real fits.'
                 </p>
-                <div className="mt-3 text-sm text-charcoal/50">— user{i}</div>
+                <div className="mt-3 text-sm text-charcoal/50">- user{i}</div>
               </div>
             ))}
           </div>
@@ -981,7 +981,7 @@ export default function Home() {
       {/* ---------------- HOW TO FLEX ---------------- */}
       <section
         id="how-to-flex"
-        className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible"
+        className="relative isolate z-10 bg-[#cebda6] left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible pb-12 md:pb-20"
       >
         {/* Big creme background text */}
         <div
@@ -1063,61 +1063,112 @@ export default function Home() {
       </section>
 
       {/* ---------------- FITOGRAPHY ---------------- */}
-      <section id="collections" className="relative z-0 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
-        <header className="mb-6 md:mb-8 text-center">
-          <TitleFloat
-            as="h2"
-            playOnMount={false}
-            animationDuration={1.05}
-            ease="power3.out"
-            stagger={0.02}
-            containerClassName="m-0"
-            textClassName="font-clash text-2xl md:text-3xl font-bold text-charcoal"
-          >
-            fitography
-          </TitleFloat>
+      <section
+        id="collections"
+        className="relative isolate z-10 bg-creme left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible px-4 sm:px-6 md:px-8 py-12 md:py-16"
+      >
+        {/* Creme wave indicator */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-24 md:-translate-y-32 w-[115vw] md:w-[130vw] h-22 md:h-30 max-w-none pointer-events-none z-40 "
+          aria-hidden="true"
+        >
+          <svg className="w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z" className="fill-creme" />
+          </svg>
+        </div>
 
-          <ScrollFloat
-            as="p"
-            animationDuration={0.95}
-            ease="power2.out"
-            scrollStart="top 95%"
-            scrollEnd="top 60%"
-            stagger={0.006}
-            containerClassName="mt-2 m-0"
-            textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
-          >
-            search by tag, caption, or @user — with no filters you’ll see everything.
-          </ScrollFloat>
+        {/* Spacer to move marquee down without affecting wave */}
+        <div className="-h-4 md:-h-8" aria-hidden="true" />
 
-          <div className="mx-auto mt-4 max-w-xl">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="search tags, captions, or @user…"
-              aria-label="Search fitography"
-              className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
-            />
-          </div>
-        </header>
+        {/* Creme marquee indicator */}
+        <div
+          className="relative z-20 left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden border-2 border-[#cebda6] bg-creme"
+        >
+          <ScrollVelocity
+            texts={["taf • throw a fit • taf • throw a fit •"]}
+            velocity={110}
+            parallaxClassName="py-0.5 md:py-2.5"
+            scrollerClassName="text-[#cebda6] font-satoshi text-[2.25rem] sm:text-[3.25rem] md:text-[4.25rem] lg:text-[5.25rem] xl:text-[6.5rem] 2xl:text-[2rem] leading-[0.95]"
+          />
+        </div>
 
-        {filtered.length === 0 ? (
-          <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
-            {posts.length === 0
-              ? "no uploads yet — hit “flex a fit” to add your first look."
-              : "no matches for your filters. try a different search."}
-          </div>
-        ) : (
-          <div
-            className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
-            style={{ columnFill: "balance" }}
-          >
-            {filtered.map((p) => (
-              <FitCard key={p.id} post={p} />
+        {/* Repeating FITS backdrop */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-24 bottom-6 z-0 overflow-hidden opacity-30"
+        >
+          <div className="flex h-full flex-col justify-evenly gap-8">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <p
+                key={`fits-bg-${index}`}
+                style={{ transform: index % 2 === 0 ? "translateX(-6%)" : "translateX(10%)" }}
+                className="font-clash font-bold lowercase tracking-[0.25em] text-charcoal/20 whitespace-nowrap text-[4.5rem] sm:text-[6.5rem] md:text-[8.5rem] lg:text-[11rem]"
+              >
+                {"fits ".repeat(8)}
+              </p>
             ))}
           </div>
-        )}
-      </section>
-    </div>
+        </div>
+
+        <div className="relative z-10 max-w-[100rem] mx-auto">
+          <header className="mb-6 md:mb-8 text-center">
+            <TitleFloat
+              as="h2"
+              playOnMount={false}
+              animationDuration={1.05}
+              ease="power3.out"
+              stagger={0.02}
+              containerClassName="m-0"
+              textClassName="font-clash font-semibold text-charcoal tracking-[-0.01em] leading-[1.05] text-[2.25rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem]"
+            >
+              fitography
+            </TitleFloat>
+
+            <ScrollFloat
+              as="p"
+              animationDuration={0.95}
+              ease="power2.out"
+              scrollStart="top 95%"
+              scrollEnd="top 60%"
+              stagger={0.006}
+              containerClassName="mt-2 m-0"
+              textClassName="text-charcoal/70 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed"
+            >
+              search by tag, caption, or @user - with no filters you'll see everything.
+            </ScrollFloat>
+
+            <div className="mx-auto mt-4 max-w-xl">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="search tags, captions, or @user..."
+                aria-label="Search fitography"
+                className="w-full rounded-xl border border-charcoal/15 bg-white px-4 py-2 outline-none focus:ring-2 focus:ring-charcoal/10 text-charcoal placeholder:text-charcoal/40"
+              />
+            </div>
+          </header>
+
+          {filtered.length === 0 ? (
+            <div className="p-8 text-center text-charcoal/60 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] leading-relaxed">
+              {posts.length === 0
+                ? "no uploads yet - hit 'flex a fit' to add your first look."
+                : "no matches for your filters. try a different search."}
+            </div>
+          ) : (
+            <div
+              className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
+              style={{ columnFill: "balance" }}
+            >
+              {filtered.map((p) => (
+                <FitCard key={p.id} post={p} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>    </div>
   );
 }
+
+
+
+
