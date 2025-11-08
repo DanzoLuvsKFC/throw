@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.aa0efd99.css",
-    "main.js": "/throw/static/js/main.7b7369cf.js",
+    "main.css": "/throw/static/css/main.20449db9.css",
+    "main.js": "/throw/static/js/main.0615268f.js",
     "static/media/Hero Image.png": "/throw/static/media/Hero Image.5048088517ad58f2ea44.png",
     "static/media/fit 16.jpg": "/throw/static/media/fit 16.2888d10d496f461a9ac7.jpg",
     "static/media/fit 17.jpg": "/throw/static/media/fit 17.26a02cae09f5414d34f1.jpg",
@@ -29,11 +29,11 @@
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.aa0efd99.css.map": "/throw/static/css/main.aa0efd99.css.map",
-    "main.7b7369cf.js.map": "/throw/static/js/main.7b7369cf.js.map"
+    "main.20449db9.css.map": "/throw/static/css/main.20449db9.css.map",
+    "main.0615268f.js.map": "/throw/static/js/main.0615268f.js.map"
   },
   "entrypoints": [
-    "static/css/main.aa0efd99.css",
-    "static/js/main.7b7369cf.js"
+    "static/css/main.20449db9.css",
+    "static/js/main.0615268f.js"
   ]
 }
