@@ -151,13 +151,13 @@ function FitCard({ post }) {
             {post.tags.slice(0, 3).map((t) => (
               <span
                 key={t}
-                className="rounded-full bg-creme/95 text-charcoal text-xs px-2 py-[2px] border border-charcoal/10"
+                className="rounded-full bg-creme/95 text-charcoal text-sm px-3 py-1 border border-charcoal/10 font-medium"
               >
                 {t}
               </span>
             ))}
             {post.tags.length > 3 && (
-              <span className="rounded-full bg-creme/90 text-charcoal text-xs px-2 py-[2px] border border-charcoal/10">
+              <span className="rounded-full bg-creme/90 text-charcoal text-sm px-3 py-1 border border-charcoal/10 font-medium">
                 +{post.tags.length - 3}
               </span>
             )}
@@ -165,19 +165,19 @@ function FitCard({ post }) {
         ) : null}
       </div>
       {(post.caption || post.user) && (
-        <div className="p-3">
-          <div className="text-sm text-charcoal/60 hidden">
+        <div className="p-3 bg-[#cebda6]">
+          <div className="text-sm font-semibold text-charcoal hidden">
             @{post.user ?? "guest"} •{" "}
             {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "-"}
           </div>
-          <div className="text-sm text-charcoal/60">
+          <div className="text-sm font-semibold text-charcoal flex items-center">
             @{post.user ?? "guest"}
-            <span aria-hidden="true" className="px-1.5">
+            <span aria-hidden="true" className="px-1.5 text-creme/80">
               &middot;
             </span>
             {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}
           </div>
-          {post.caption ? <div className="mt-1 text-charcoal">{post.caption}</div> : null}
+          {post.caption ? <div className="mt-1 text-creme/95 font-medium">{post.caption}</div> : null}
         </div>
       )}
     </FloatIn>
@@ -1092,26 +1092,29 @@ export default function Home() {
           />
         </div>
 
-        {/* Repeating FITS backdrop */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-24 bottom-6 z-0 overflow-hidden opacity-30"
-        >
-          <div className="flex h-full flex-col justify-evenly gap-8">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <p
-                key={`fits-bg-${index}`}
-                style={{ transform: index % 2 === 0 ? "translateX(-6%)" : "translateX(10%)" }}
-                className="font-clash font-bold lowercase tracking-[0.25em] text-charcoal/20 whitespace-nowrap text-[4.5rem] sm:text-[6.5rem] md:text-[8.5rem] lg:text-[11rem]"
-              >
-                {"fits ".repeat(8)}
-              </p>
-            ))}
-          </div>
-        </div>
-
         <div className="relative z-10 max-w-[100rem] mx-auto">
-          <header className="mb-6 md:mb-8 text-center">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-6 sm:top-18 md:top-10 h-[24rem] sm:h-[26rem] md:h-[30rem] z-0 overflow-hidden opacity-30"
+          >
+            <div className="flex h-full flex-col justify-center gap-8">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <p
+                  key={`fits-bg-${index}`}
+                  style={{ transform: index % 2 === 0 ? "translateX(-6%)" : "translateX(10%)" }}
+                  className="font-clash font-bold lowercase tracking-[0.25em] text-[#cebda6] whitespace-nowrap text-[4.5rem] sm:text-[6.5rem] md:text-[8.5rem] lg:text-[11rem]"
+                >
+                  {"fits ".repeat(8)}
+                </p>
+              ))}
+            </div>
+          </div>
+          <header className="relative z-20 mb-3 md:mb-4 text-center">
+            <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center opacity-30">
+              <p className="font-clash font-bold lowercase text-[#cebda6] whitespace-nowrap text-[8rem] sm:text-[10rem] md:text-[12rem] lg:text-[20rem]">
+                fits fits fits
+              </p>
+            </div>
             <TitleFloat
               as="h2"
               playOnMount={false}
@@ -1156,7 +1159,7 @@ export default function Home() {
             </div>
           ) : (
             <div
-              className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
+              className="relative z-10 columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"
               style={{ columnFill: "balance" }}
             >
               {filtered.map((p) => (

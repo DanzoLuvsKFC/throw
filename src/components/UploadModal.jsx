@@ -206,7 +206,7 @@ export default function UploadModal() {
           {/* right: form */}
           <div className="p-4 md:p-6 flex flex-col gap-4">
             <div>
-              <label className="block text-[11px] uppercase tracking-wide text-creme/60 mb-1">caption</label>
+              <label className="block text-[11px] lowercase tracking-wide text-creme/60 mb-1">caption</label>
               <textarea
                 className="w-full rounded-lg border border-creme/15 bg-white/5 text-creme placeholder:text-creme/40 px-3 py-2 outline-none focus:ring-2 focus:ring-creme/20"
                 rows={4}
@@ -217,7 +217,7 @@ export default function UploadModal() {
             </div>
 
             <div>
-              <label className="block text-[11px] uppercase tracking-wide text-creme/60 mb-1">tags (press enter)</label>
+              <label className="block text-[11px] lowercase tracking-wide text-creme/60 mb-1">tags (press enter)</label>
               <div className="rounded-lg border border-creme/15 bg-white/5 px-2 py-2 flex flex-wrap gap-2">
                 {tags.map((t) => (
                   <span key={t} className="inline-flex items-center gap-1 rounded-full bg-creme text-charcoal px-2 py-1 text-sm">
@@ -255,7 +255,7 @@ export default function UploadModal() {
                 disabled={!canSubmit}
                 className="px-4 py-2 rounded-md bg-creme text-charcoal font-medium hover:opacity-90 disabled:opacity-60 transition"
               >
-                {submitting ? "Posting…" : "Post"}
+                {submitting ? "posting…" : "post"}
               </button>
             </div>
           </div>
