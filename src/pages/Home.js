@@ -314,8 +314,8 @@ function GlideTwoSlotCarousel({
       </div>
       <div ref={rightRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
         <img ref={imgRightRef} alt="carousel right" />
-          </div>
-          </div>
+      </div>
+    </div>
   );
 }
 /* eslint-enable no-unused-vars */
@@ -377,7 +377,7 @@ export default function Home() {
   const [magnetDisabled, setMagnetDisabled] = useState(false);
   const [showHoverBg, setShowHoverBg] = useState(false);
   const [hoverBgDismissed, setHoverBgDismissed] = useState(false);
-  
+
   // Build review items based on posts' usernames
   const reviewItems = useMemo(() => {
     // Unique handles from posts (no duplicates)
@@ -686,7 +686,7 @@ export default function Home() {
               throw a fit
             </span>
           </div>
-          
+
         </div>
         {/* Inner wrapper retains original clipping */}
         <div className="relative overflow-hidden">
@@ -876,15 +876,23 @@ export default function Home() {
         {/* Wave (top) */}
         <div
           className="absolute left-1/2 -translate-x-1/2 top-0
-                     -translate-y-28 md:-translate-y-20
-                     w-[102vw] md:w-[104vw] h-20 md:h-28
-                     max-w-none pointer-events-none z-10"
+             -translate-y-28 md:-translate-y-20
+             w-[102vw] md:w-[104vw] h-32 md:h-28
+             max-w-none overflow-hidden pointer-events-none z-10"
           aria-hidden="true"
         >
-          <svg className="w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z" className="fill-creme" />
+          <svg
+            className="w-full h-full origin-top scale-y-[1.6] md:scale-y-100"
+            viewBox="0 0 1440 120"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z"
+              className="fill-creme"
+            />
           </svg>
         </div>
+
 
         {/* Spacer to move marquee down without affecting wave */}
         <div className="h-6 md:h-10" aria-hidden="true" />
@@ -901,7 +909,7 @@ export default function Home() {
           />
         </div>
 
-      {/* Content */}
+        {/* Content */}
         <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
           {/* Big background text */}
           <div
@@ -946,7 +954,7 @@ export default function Home() {
 
           {/* Simple review quotes grid (placeholder) */}
           <div className="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1,2,3].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="rounded-xl border border-charcoal/10 bg-white p-4 shadow-sm">
                 <p className="text-charcoal/80 text-[0.95rem] leading-relaxed">
                   'love the community vibes and how easy it is to discover real fits.'
@@ -1044,20 +1052,20 @@ export default function Home() {
           </header>
 
           <div className="mt-6">
-          <div className="flex flex-row items-center justify-center gap-6 flex-wrap md:flex-nowrap md:overflow-visible overflow-x-auto px-2">
-            <StepCard Icon={UploadIcon} title="upload your fit" index="1">
-              Post a clean photo of your outfit.
-            </StepCard>
-            <StepCard Icon={TagIcon} title="tag each piece" index="2">
-              Add tags for brands, items, and vibes.
-            </StepCard>
-            <StepCard Icon={DiscoverIcon} title="flex it" index="3">
-              Publish and let the timeline see.
-            </StepCard>
-            <StepCard Icon={CheckIcon} title="done" index="4">
-              You’re set. Explore and get inspired.
-            </StepCard>
-          </div>
+            <div className="flex flex-row items-center justify-center gap-6 flex-wrap md:flex-nowrap md:overflow-visible overflow-x-auto px-2">
+              <StepCard Icon={UploadIcon} title="upload your fit" index="1">
+                Post a clean photo of your outfit.
+              </StepCard>
+              <StepCard Icon={TagIcon} title="tag each piece" index="2">
+                Add tags for brands, items, and vibes.
+              </StepCard>
+              <StepCard Icon={DiscoverIcon} title="flex it" index="3">
+                Publish and let the timeline see.
+              </StepCard>
+              <StepCard Icon={CheckIcon} title="done" index="4">
+                You’re set. Explore and get inspired.
+              </StepCard>
+            </div>
           </div>
         </div>
       </section>
@@ -1067,15 +1075,26 @@ export default function Home() {
         id="collections"
         className="relative isolate z-10 bg-creme left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-visible px-4 sm:px-6 md:px-8 py-12 md:py-16"
       >
-        {/* Creme wave indicator */}
+        {/* Wave (top) */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-24 md:-translate-y-32 w-[115vw] md:w-[130vw] h-22 md:h-30 max-w-none pointer-events-none z-40 "
+          className="absolute left-1/2 -translate-x-1/2 top-0
+             -translate-y-28 md:-translate-y-20
+             w-[102vw] md:w-[104vw] h-32 md:h-28
+             max-w-none overflow-hidden pointer-events-none z-10"
           aria-hidden="true"
         >
-          <svg className="w-full h-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z" className="fill-creme" />
+          <svg
+            className="w-full h-full origin-top scale-y-[1.6] md:scale-y-100"
+            viewBox="0 0 1440 120"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,40 C240,110 480,0 720,40 C960,80 1200,10 1440,40 L1440,120 L0,120 Z"
+              className="fill-creme"
+            />
           </svg>
         </div>
+
 
         {/* Spacer to move marquee down without affecting wave */}
         <div className="-h-4 md:-h-8" aria-hidden="true" />
