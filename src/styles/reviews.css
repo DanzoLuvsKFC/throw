@@ -1,0 +1,45 @@
+/* Colors from tailwind.config.js: creme = #ffffe3; requested card bg = #cebda6 */
+:root { --rb2-bg: #ffffe3; }
+
+.rb2-section {
+  padding: 2rem 0;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw; /* full-bleed so content can overflow off-screen */
+}
+
+.rb2-marquee { position: relative; overflow: visible; }
+.rb2-marquee::before, .rb2-marquee::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 64px; pointer-events: none; z-index: 1;
+  background: linear-gradient(to right, var(--rb2-bg), transparent);
+}
+.rb2-marquee::after { right: 0; transform: scaleX(-1); }
+.rb2-marquee::before { left: 0; }
+
+.rb2-track {
+  display: flex; gap: 1rem; padding: 0 1rem; width: max-content;
+  animation: rb2-scroll var(--rb2-duration, 50s) linear infinite;
+  animation-direction: var(--rb2-direction, normal);
+  will-change: transform;
+}
+@keyframes rb2-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb2-track { animation: none; transform: none; }
+}
+
+.rb2-card {
+  background: #cebda6; color: #2E2E2E; border-radius: 18px; border: 1px solid rgba(0,0,0,0.06);
+  padding: 1.25rem 1.25rem 1rem; width: clamp(280px, 42vw, 520px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+.rb2-card-text { margin: 0 0 1rem 0; line-height: 1.6; }
+.rb2-card-footer { display: flex; align-items: center; gap: .25rem; }
+.rb2-avatar { width: 36px; height: 36px; border-radius: 9999px; background: rgba(46,46,46,0.08); border: 2px solid rgba(46,46,46,0.2); }
+.rb2-handle { font-weight: 700; color: #2E2E2E; }

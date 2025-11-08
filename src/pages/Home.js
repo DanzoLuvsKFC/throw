@@ -14,6 +14,8 @@ import look1 from "../assets/fonts/fits/fit.jpg";
 import look2 from "../assets/fonts/fits/fit 8.jpg";
 import look3 from "../assets/fonts/fits/fit 12.jpg";
 import heroHanger from "../assets/fonts/fits/Hero Image.png";
+import ReviewsMarquee from "../components/reviews/ReviewsMarquee";
+import "../styles/reviews.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -311,8 +313,8 @@ function GlideTwoSlotCarousel({
       </div>
       <div ref={rightRef} className="rounded-2xl overflow-hidden h-[66svh] min-h-[480px] relative">
         <img ref={imgRightRef} alt="carousel right" />
-      </div>
-    </div>
+          </div>
+          </div>
   );
 }
 /* eslint-enable no-unused-vars */
@@ -388,6 +390,44 @@ export default function Home() {
   const [magnetDisabled, setMagnetDisabled] = useState(false);
   const [showHoverBg, setShowHoverBg] = useState(false);
   const [hoverBgDismissed, setHoverBgDismissed] = useState(false);
+  
+  // Build review items based on posts' usernames
+  const reviewItems = useMemo(() => {
+    // Unique handles from posts (no duplicates)
+    const uniqueHandles = Array.from(
+      new Set(
+        posts
+          .map((p) => (p.user || "").trim())
+          .filter(Boolean)
+      )
+    ).map((u) => `@${u}`);
+
+    const texts = [
+      "Super cool concept, would be amazing if it was fully developed.",
+      "Love the curated vibe.",
+      "The tags makes things so much more easier.",
+      "Super niche to be quite honest.",
+      "Found about 6/7 cool new outfits here.",
+      "Would love to see this made into a real app.",
+      "Tags make searching a breeze.",
+      "Sponser the creator, the idea is fire.",
+    ];
+
+    // Limit to 8 unique usernames and 8 unique quotes (no repeats)
+    const MAX = 8;
+    const handlesLimited = uniqueHandles.slice(0, MAX);
+    const count = Math.min(handlesLimited.length, texts.length);
+    const items = count
+      ? Array.from({ length: count }, (_, i) => ({ text: texts[i], handle: handlesLimited[i] }))
+      : texts.slice(0, MAX).map((t) => ({ text: t, handle: "@guest" }));
+
+    const third = Math.ceil(items.length / 3) || 1;
+    return {
+      top: items.slice(0, third),
+      mid: items.slice(third, third * 2),
+      bottom: items.slice(third * 2),
+    };
+  }, [posts]);
 
   // HERO refs
   const textWrapRef = useRef(null);
@@ -659,6 +699,7 @@ export default function Home() {
               throw a fit
             </span>
           </div>
+          
         </div>
         {/* Inner wrapper retains original clipping */}
         <div className="relative overflow-hidden">
@@ -822,7 +863,6 @@ export default function Home() {
               Every outfit is tagged, every detail connected. Whether you’re chasing a specific look or just exploring, finding your next fitspo is as simple as a scroll.
             </ScrollFloat>
           </header>
-
           <div
             ref={howCardsRef}
             style={{ height: '600px', position: 'relative' }}
@@ -874,8 +914,22 @@ export default function Home() {
           />
         </div>
 
-        {/* Content */}
+      {/* Content */}
         <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
+          {/* Big background text */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-30 -translate-y-[40px] md:-translate-y-[64px]"
+          >
+            <span
+              className={
+                "font-clash font-bold lowercase select-none tracking-tight text-[#cebda6] leading-none whitespace-nowrap " +
+                "text-[6rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] xl:text-[28rem]"
+              }
+            >
+              reviews
+            </span>
+          </div>
           <header className="mb-6 md:mb-8 text-center">
             <TitleFloat
               as="h2"
@@ -884,9 +938,9 @@ export default function Home() {
               ease="power3.out"
               stagger={0.02}
               containerClassName="m-0"
-              textClassName="font-clash text-2xl md:text-3xl font-bold text-charcoal"
+              textClassName="font-clash font-semibold text-charcoal tracking-[-0.01em] leading-[1.05] text-[2.25rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem] xl:text-[4.5rem]"
             >
-              reviews
+              loved by thrifters
             </TitleFloat>
 
             <ScrollFloat
@@ -904,7 +958,7 @@ export default function Home() {
           </header>
 
           {/* Simple review quotes grid (placeholder) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1,2,3].map((i) => (
               <div key={i} className="rounded-xl border border-charcoal/10 bg-white p-4 shadow-sm">
                 <p className="text-charcoal/80 text-[0.95rem] leading-relaxed">
@@ -914,9 +968,15 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <div id="rb2-reviews" className="rb2-section">
+            <ReviewsMarquee items={reviewItems.top} direction="left" duration={55} />
+            <div className="h-4" />
+            <ReviewsMarquee items={reviewItems.mid} direction="right" duration={58} />
+            <div className="h-4" />
+            <ReviewsMarquee items={reviewItems.bottom} direction="left" duration={62} />
+          </div>
         </div>
       </section>
-
       {/* ---------------- FITOGRAPHY ---------------- */}
       <section id="collections" className="relative z-0 bg-creme max-w-[100rem] mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16">
         <header className="mb-6 md:mb-8 text-center">
