@@ -21,11 +21,20 @@ import fit19 from "../assets/fonts/fits/fit 19.jpg";
 import fit20 from "../assets/fonts/fits/fit 20.jpg";
 import fit21 from "../assets/fonts/fits/fit 21.jpg";
 import fit22 from "../assets/fonts/fits/fit 22.jpg";
+import fit23 from "../assets/fonts/fits/fit 23.jpg";
+import fit24 from "../assets/fonts/fits/fit 24.jpg";
+import fit25 from "../assets/fonts/fits/fit 25.jpg";
+import fit26 from "../assets/fonts/fits/fit 26.jpg";
+import fit27 from "../assets/fonts/fits/fit 27.jpg";
+import fit28 from "../assets/fonts/fits/fit 28.jpg";
+import fit29 from "../assets/fonts/fits/fit 29.jpg";
+import fit30 from "../assets/fonts/fits/fit 30.jpg";
+
 
 const FeedContext = createContext(null);
 
 /** Bump the key so old empty data doesn't suppress seeds */
-const LS_KEY = "taf_posts_v5"; // <- bumped from v3 so new seeds (incl. fit16) load
+const LS_KEY = "taf_posts_v7"; // <- bumped from v3 so new seeds (incl. fit16) load
 
 /** Utility */
 function fileToDataUrl(file) {
@@ -48,7 +57,7 @@ const seedPosts = [
     src: fit2,
     caption: "",
     tags: ["light blue", "denim", "converse"],
-    user: "chicbabe03",
+    user: "leratolaka",
     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 11,
   },
   {
@@ -185,6 +194,70 @@ const seedPosts = [
     caption: "",
     tags: ["denim", "black", "light-wash"],
     user: "kona",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit23",
+    src: fit23,
+    caption: "",
+    tags: ["sweats", "grey", "plaid", "button-up", "white"],
+    user: "cozy",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit24",
+    src: fit24,
+    caption: "",
+    tags: ["cargos", "black", "puffer", "creme", "gloves"],
+    user: "cozy",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit25",
+    src: fit25,
+    caption: "",
+    tags: ["cargos", "black", "fitted caps", "red", "camo", "duo"],
+    user: "danzo",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit26",
+    src: fit26,
+    caption: "",
+    tags: ["black", "fitted caps", "red", "bomber jacket"],
+    user: "danzo",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit27",
+    src: fit27,
+    caption: "",
+    tags: ["green", "sage", "cardigan", "black", "grey", ],
+    user: "danzo",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit28",
+    src: fit28,
+    caption: "",
+    tags: ["layered", "black", "carhartt", "converse", "plaid"],
+    user: "leratolaka",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit29",
+    src: fit29,
+    caption: "",
+    tags: ["stussy", "black", "jorts", "adidas",],
+    user: "danzo",
+    createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
+  },
+  {
+    id: "seed_fit30",
+    src: fit30,
+    caption: "",
+    tags: ["layered", "black", "carhartt", "vans",],
+    user: "danzo",
     createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1,
   },
 ];

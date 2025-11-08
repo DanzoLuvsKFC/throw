@@ -50,7 +50,7 @@ export default function SiteFooter({
 }) {
   return (
     <footer className="w-full bg-creme border-t border-charcoal/10" role="contentinfo" aria-label="Site footer">
-      <div className="w-full" style={{ height: 160, position: 'relative', overflow: 'hidden' }}>
+      <div className="w-full overflow-hidden pb-4">
         <LogoLoop
           logos={logos}
           speed={speed}

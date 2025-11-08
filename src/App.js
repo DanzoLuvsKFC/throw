@@ -39,9 +39,9 @@ const GitHubIcon = (props) => (
 );
 
 const socialLogos = [
-  { node: <InstagramIcon />, title: "Instagram", href: "https://instagram.com" },
-  { node: <LinkedInIcon />, title: "LinkedIn", href: "https://linkedin.com" },
-  { node: <GitHubIcon />, title: "GitHub", href: "https://github.com" },
+  { node: <InstagramIcon />, title: "Instagram", href: "https://www.instagram.com/yunglasco/" },
+  { node: <LinkedInIcon />, title: "LinkedIn", href: "https://www.linkedin.com/in/mark-daniel-lasco-7ab7ab309/" },
+  { node: <GitHubIcon />, title: "GitHub", href: "https://github.com/DanzoLuvsKFC" },
 ];
 
 function App() {
