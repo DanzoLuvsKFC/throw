@@ -1,39 +1,47 @@
 {
   "files": {
-    "main.css": "/throw/static/css/main.9026f9da.css",
-    "main.js": "/throw/static/js/main.31033b0a.js",
+    "main.css": "/throw/static/css/main.4dec9ada.css",
+    "main.js": "/throw/static/js/main.b2eb7ff8.js",
     "static/media/Hero Image.png": "/throw/static/media/Hero Image.5048088517ad58f2ea44.png",
     "static/media/fit 16.jpg": "/throw/static/media/fit 16.2888d10d496f461a9ac7.jpg",
     "static/media/fit 17.jpg": "/throw/static/media/fit 17.26a02cae09f5414d34f1.jpg",
     "static/media/fit 6.jpg": "/throw/static/media/fit 6.0239ea23c9c14459aeb6.jpg",
     "static/media/fit 11.jpg": "/throw/static/media/fit 11.743001b1b12d39ce0acc.jpg",
     "static/media/fit 7.jpg": "/throw/static/media/fit 7.fe17125d83cff9520171.jpg",
+    "static/media/fit 28.jpg": "/throw/static/media/fit 28.c7b105a036477a3e36ee.jpg",
     "static/media/fit 8.jpg": "/throw/static/media/fit 8.f1138feb7fe5e8a39eec.jpg",
     "static/media/fit 5.jpg": "/throw/static/media/fit 5.746512da3618f19b4738.jpg",
+    "static/media/fit 23.jpg": "/throw/static/media/fit 23.ebec2c4ae4e35d73ac90.jpg",
+    "static/media/fit 24.jpg": "/throw/static/media/fit 24.2d025eb82e91f58aba66.jpg",
     "static/media/fit 2.jpg": "/throw/static/media/fit 2.e690b5cab1c2db7f1f12.jpg",
     "static/media/fit 4.jpg": "/throw/static/media/fit 4.224a9d0ad6be00606c49.jpg",
     "static/media/fit 3.jpg": "/throw/static/media/fit 3.6878f1d193ae983727ff.jpg",
     "static/media/fit 22.jpg": "/throw/static/media/fit 22.7805cc1def5f805feb97.jpg",
+    "static/media/fit 30.jpg": "/throw/static/media/fit 30.e411e5dc0b786eaa0cce.jpg",
     "static/media/fit.jpg": "/throw/static/media/fit.45312e949ee1e2e82acc.jpg",
     "static/media/fit 9.jpg": "/throw/static/media/fit 9.e254950d15dc96ab7667.jpg",
     "static/media/fit 15.jpg": "/throw/static/media/fit 15.4d344fef7f8d2a62cea9.jpg",
     "static/media/fit 21.jpg": "/throw/static/media/fit 21.16eb72eb500273aa0792.jpg",
+    "static/media/fit 25.jpg": "/throw/static/media/fit 25.7a4f29ffbc57121746ae.jpg",
+    "static/media/fit 29.jpg": "/throw/static/media/fit 29.77a459d5f3a3698e0985.jpg",
     "static/media/fit 12.jpg": "/throw/static/media/fit 12.1c045d1db54a3e3e3fee.jpg",
     "static/media/fit 18.jpg": "/throw/static/media/fit 18.495bda8a1d1048256fe0.jpg",
     "static/media/fit 14.jpg": "/throw/static/media/fit 14.8919ffe88fb3f7574ef2.jpg",
+    "static/media/fit 27.jpg": "/throw/static/media/fit 27.4d8ca7ae06b69d9da2cb.jpg",
     "static/media/fit 20.jpg": "/throw/static/media/fit 20.2f02193fe6d8a604b065.jpg",
     "static/media/fit 13.jpg": "/throw/static/media/fit 13.a611e04777f5801c9b80.jpg",
     "static/media/fit 19.jpg": "/throw/static/media/fit 19.8f89dd9285035a57e51a.jpg",
     "static/media/Satoshi-Bold.otf": "/throw/static/media/Satoshi-Bold.b5dd7deee13e32689234.otf",
     "static/media/Satoshi-Regular.otf": "/throw/static/media/Satoshi-Regular.811ccb0b5af1892a71df.otf",
+    "static/media/fit 26.jpg": "/throw/static/media/fit 26.48fc563cf3edb0591aa8.jpg",
     "static/media/Satoshi-Light.otf": "/throw/static/media/Satoshi-Light.66b6be60222486fa8673.otf",
     "static/media/ClashDisplay-Bold.otf": "/throw/static/media/ClashDisplay-Bold.2ac7f694be4905551147.otf",
     "index.html": "/throw/index.html",
-    "main.9026f9da.css.map": "/throw/static/css/main.9026f9da.css.map",
-    "main.31033b0a.js.map": "/throw/static/js/main.31033b0a.js.map"
+    "main.4dec9ada.css.map": "/throw/static/css/main.4dec9ada.css.map",
+    "main.b2eb7ff8.js.map": "/throw/static/js/main.b2eb7ff8.js.map"
   },
   "entrypoints": [
-    "static/css/main.9026f9da.css",
-    "static/js/main.31033b0a.js"
+    "static/css/main.4dec9ada.css",
+    "static/js/main.b2eb7ff8.js"
   ]
 }
