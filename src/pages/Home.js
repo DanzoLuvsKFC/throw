@@ -986,7 +986,7 @@ export default function Home() {
         {/* Big creme background text */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-30 -translate-y-[40px] md:-translate-y-[64px]"
+          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-25 -translate-y-[40px] md:-translate-y-[64px]"
         >
           <span
             className={
